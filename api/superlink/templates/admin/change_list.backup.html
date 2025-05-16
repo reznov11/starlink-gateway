@@ -1,0 +1,10 @@
+{% extends 'admin/change_list.backup.html' %}
+
+{% block content %}
+    <div id="custom_filter_changelist">
+        {% if custom_filter_template %}
+            {% include custom_filter_template %}
+        {% endif %}
+        {{ block.super }}
+    </div>
+{% endblock %}

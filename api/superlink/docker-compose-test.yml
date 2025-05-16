@@ -1,0 +1,18 @@
+services:
+  bakai_agent_proposals:
+    image: IMAGE_NAME
+    container_name: bakai-kg-vtiger
+    ports:
+      - 8002:8000
+    env_file:
+      - ./env
+    networks:
+      - bakai_agent_proposals_network
+    volumes:
+      - ./logs:/app/logs
+      - ./static:/app/static
+    command: gunicorn -c gunicorn_config.py core.wsgi:application --reload
+
+networks:
+  bakai_agent_proposals_network:
+    driver: bridge

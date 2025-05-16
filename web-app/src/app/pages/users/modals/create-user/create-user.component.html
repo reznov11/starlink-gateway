@@ -1,0 +1,152 @@
+<div class="dialog_container">
+  <div
+    class="dialog_header"
+    fxLayout="row"
+    fxLayoutAlign="space-between center"
+  >
+    <h2 mat-dialog-title>
+      {{ !isEditMode ? "Добавление сотрудника" : "Редактирование сотрудника" }}
+    </h2>
+    <button mat-icon-button aria-label="Close dialog button" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <mat-dialog-content class="mat-typography">
+    <form role="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-unit avatar-image-upload-section">
+        <div class="input-label">Аватарка</div>
+        <div class="avatar-image-container">
+          @if (avatarImagePreview) {
+          <img [src]="avatarImagePreview" alt="User avatar preview" class="avatar-image-preview">
+          } @else {
+          <div class="avatar-image-placeholder">
+            <div class="profile-avatar profile-avatar-initials">
+              @if (user.first_name && user.last_name) {
+                {{ user.first_name![0] || '' }}{{ user.last_name![0] || '' }}
+              } @else {
+                <mat-icon>person</mat-icon>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        <input type="file" accept="image/*" (change)="onImageUpload($event)" #fileInput hidden>
+        <button mat-stroked-button type="button" (click)="fileInput.click()" class="upload-button">
+          <mat-icon>upload</mat-icon>
+          {{ avatarImagePreview ? 'Изменить изображение' : 'Загрузить изображение' }}
+        </button>
+        @if (form.get('avatar')?.invalid && form.get('avatar')?.touched) {
+        <mat-error>Изображение обязательно</mat-error>
+        }
+      </div>
+      <div class="form-unit" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+        <p><mat-checkbox formControlName="is_active" (change)="resetActiveUser()">Активен</mat-checkbox></p>
+        <p *ngIf="form.get('is_active')?.value">
+          <mat-checkbox formControlName="is_staff">Может авторизоваться</mat-checkbox>
+        </p>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Имя</div>
+        <mat-form-field>
+          <input
+            type="text"
+            formControlName="first_name"
+            matInput
+            placeholder="Напишите имя"
+          />
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Фамилия</div>
+        <mat-form-field>
+          <input
+            type="text"
+            formControlName="last_name"
+            matInput
+            placeholder="Напишите фамилию"
+          />
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Почта</div>
+        <mat-form-field>
+          <input
+            type="text"
+            formControlName="email"
+            matInput
+            placeholder="Напишите почту"
+          />
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Пароль</div>
+        <mat-form-field>
+          <input matInput formControlName="password"
+                 placeholder="Введите пароль"
+                 [type]="togglePassword() ? 'password' : 'text'" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="clickEvent($event)"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="togglePassword()"
+          >
+            <mat-icon>{{togglePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Телефон</div>
+        <mat-form-field>
+          <input
+            type="text"
+            formControlName="phone_number"
+            matInput
+            placeholder="+996 702 12 34 56"
+          />
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Локация</div>
+        <mat-form-field>
+          <input type="text" formControlName="location" matInput placeholder="Напишите локацию" />
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Должность</div>
+        <mat-form-field>
+          <input type="text" formControlName="job_title" matInput placeholder="Напишите должность" />
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Дата рождения</div>
+        <mat-form-field>
+          <input type="date" data-date-format="YYYY-MM-DD"
+          formControlName="birth_date" matInput placeholder="Напишите дату рождения" />
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Права доступа</div>
+        <mat-form-field>
+          <mat-select formControlName="role">
+            <mat-option [value]="'employee'">Сотрудник</mat-option>
+            <mat-option [value]="'super_admin'">Администратор</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-dialog-actions>
+        <button mat-flat-button class="cancel-btn" mat-dialog-close>
+          Отменить
+        </button>
+        <button
+          mat-flat-button
+          class="confirm-btn"
+          [disabled]="form.invalid"
+        >
+          {{ !isEditMode ? "Создать" : "Обновить" }}
+        </button>
+      </mat-dialog-actions>
+    </form>
+  </mat-dialog-content>
+</div>

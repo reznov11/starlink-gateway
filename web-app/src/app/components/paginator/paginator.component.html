@@ -1,0 +1,22 @@
+<div class="custom-paginator">
+  <button mat-icon-button (click)="previousPage()" [disabled]="currentPage === 0">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+
+  <div class="page-numbers">
+    <ng-container *ngFor="let item of visiblePages">
+      <button *ngIf="item.type === 'number'"
+              mat-button
+              [class.active]="item.value === currentPage"
+              (click)="goToPage(item.value)">
+        {{item.display}}
+      </button>
+
+      <span *ngIf="item.type === 'ellipsis'" class="ellipsis">{{item.display}}</span>
+    </ng-container>
+  </div>
+
+  <button mat-icon-button (click)="nextPage()" [disabled]="currentPage === totalPages - 1">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+</div>

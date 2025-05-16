@@ -1,0 +1,6 @@
+db_postgres_data
+db/*.env
+venv
+assets
+logs
+superlink/envfile.env

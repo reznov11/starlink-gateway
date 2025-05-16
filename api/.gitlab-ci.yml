@@ -1,0 +1,114 @@
+variables:
+  SERVICE: "bakai-kg-vtiger"
+  PROJECT_FOLDER: "/opt/ci-projects/$SERVICE"
+
+  REGISTRY_TEST: "registry.bakai.local"
+  REGISTRY_PROD: "image.bakai.local"
+
+  DOCKER_IMAGE_DEV: "$REGISTRY_TEST/$SERVICE:$CI_COMMIT_SHA"
+  DOCKER_IMAGE_PROD: "$REGISTRY_PROD/$SERVICE:$CI_COMMIT_TAG"
+
+  SSH_SERVER_PROD: "ci@10.152.175.2"
+
+  HTTPS_PROXY: "http://10.152.53.5:3128"
+  NO_PROXY: "testweb.bakai.kg,registry.bakai.local,image.bakai.local,git.bakai.local"
+
+stages:
+  - build
+  - prepare
+  - deploy
+
+# --------------------- dev ------------------------
+
+build-test-job:
+  tags:
+    - test-10.152.93.4
+  stage: build
+  script:
+    - cd superlink
+    - docker build -t $DOCKER_IMAGE_DEV .
+    - docker push $DOCKER_IMAGE_DEV
+    - echo "successfully deployed test image ${DOCKER_IMAGE_DEV}"
+  only:
+    - dev
+
+prepare-test-job:
+  tags:
+    - test-10.152.93.23
+  stage: prepare
+  script:
+    - cd superlink
+    - pwd
+    - mkdir -p $PROJECT_FOLDER || echo err
+    - mkdir -p $PROJECT_FOLDER/static || echo err
+    - mkdir -p $PROJECT_FOLDER/logs || echo err
+    - cp ./docker-compose-test.yml $PROJECT_FOLDER/docker-compose.yml
+    - cp $ENV_DEV $PROJECT_FOLDER/env
+    - sed -i -e "s|IMAGE_NAME|${DOCKER_IMAGE_DEV}|g" $PROJECT_FOLDER/docker-compose.yml
+
+  only:
+    - dev
+
+deploy-test-job:
+  tags:
+    - test-10.152.93.23
+  stage: deploy
+  script:
+    - cd $PROJECT_FOLDER
+    - docker compose down
+    - docker pull $DOCKER_IMAGE_DEV
+    - docker compose up -d --force-recreate
+    - docker rmi -f v$(docker images --filter "dangling=true" --filter "reference=$REGISTRY_TEST/$SERVICE" -a -q)
+    - echo "Application successfully deployed."
+  only:
+    - dev
+
+# --------------------- prod ------------------------
+
+
+
+# build-prod-job:
+#   stage: build
+#   tags:
+#     - prod-10.152.118.2
+#   script:
+#     - docker build -t $DOCKER_IMAGE_PROD .
+#     - docker push $DOCKER_IMAGE_PROD
+#     - echo "successfull deployed prod image $DOCKER_IMAGE_PROD"
+#   rules:
+#     - if: $CI_COMMIT_TAG
+
+# prepare-prod-job:
+#   stage: prepare
+#   tags:
+#     - prod-10.152.118.2
+#   script:
+#     - IMAGE_NAME=$DOCKER_IMAGE_PROD && sed -i -e "s|IMAGE_NAME|$IMAGE_NAME|g" ./docker-compose-prod.yml
+#     - mkdir -p ./bin
+#     - cp ./docker-compose-prod.yml ./bin/docker-compose.yml
+#   artifacts:
+#     untracked: false
+#     when: on_success
+#     expire_in: 360 days
+#     paths:
+#       - bin/
+#   rules:
+#     - if: $CI_COMMIT_TAG
+
+# deploy-prod-job:
+#   stage: deploy
+#   tags:
+#     - prod-10.152.118.2
+#   script:
+#     - chmod 600 $SSH_KEY_PROD
+#     - ssh -i $SSH_KEY_PROD -p 51488 $SSH_SERVER_PROD "cd $PROJECT_FOLDER && docker compose down || echo err"
+#     - scp -i $SSH_KEY_PROD -P 51488 ./bin/docker-compose.yml $SSH_SERVER_PROD:$PROJECT_FOLDER/
+#     - ssh -i $SSH_KEY_PROD -p 51488 $SSH_SERVER_PROD "docker pull $DOCKER_IMAGE_PROD"
+#     - ssh -i $SSH_KEY_PROD -p 51488 $SSH_SERVER_PROD "cd $PROJECT_FOLDER && docker compose up -d --force-recreate"
+#     - echo "Application successfully deployed"
+#   environment:
+#     name: prod
+#   rules:
+#     - if: $CI_COMMIT_TAG
+
+# --------------------- ---- ------------------------

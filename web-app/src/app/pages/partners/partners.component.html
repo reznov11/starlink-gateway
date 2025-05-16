@@ -1,0 +1,14 @@
+<div class="partners-container">
+  <div class="custom_table">
+    <app-dynamic-table
+      [columns]="partnerColumns"
+      [data]="displayedPartners"
+      [totalItems]="partners.length / pageSize"
+      [pageSize]="pageSize"
+      [currentPage]="currentPage"
+      [pageSizeOptions]="pageSizeOptions"
+      (pageChanged)="onPageChange($event)"
+      (actionClicked)="handleAction($event)">
+    </app-dynamic-table>
+  </div>
+</div>

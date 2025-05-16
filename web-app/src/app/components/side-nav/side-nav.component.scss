@@ -1,0 +1,132 @@
+$sidenav-background: #27323C;
+$sidenav-border-color: #DFE4EA;
+$sidenav-item-background: #4B82EC;
+$sidenav-item-color: #AEB3B7;
+$sidenav-item-active-color: #FFFFFF;
+$divider-border-color: #2D465B;
+
+.sidenav-container {
+  height: 100%;
+
+  .sidenav {
+    width: 290px;
+    padding: 0 2rem;
+    background: $sidenav-background;
+    border-radius: 0;
+    border-right: 1px solid $sidenav-border-color;
+
+    mat-list-item {
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: 0;
+      margin-bottom: 0.7rem;
+      text-align: left;
+      color: $sidenav-item-color;
+
+      &:hover {
+        background-color: $sidenav-item-background;
+        border-radius: 8px;
+        color: $sidenav-item-active-color;
+
+        ::ng-deep {
+          .custom_nav_icon {
+            path {
+              fill: #FFFFFF;
+            }
+          }
+        }
+      }
+
+      &.active-route {
+        color: $sidenav-item-active-color;
+      }
+    }
+
+    .top_nav_list {
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      padding-top: 1rem;
+      text-decoration: none;
+      img {
+        margin: auto;
+        width: 56px;
+        height: 56px;
+      }
+      h1 {
+        font-weight: 600;
+        font-size: 30.17px;
+        line-height: 25.14px;
+        letter-spacing: 0;
+        color: #FFFFFF;
+      }
+    }
+
+    ::ng-deep {
+      .custom_nav_icon {
+        path {
+          fill: #AEB3B7;
+        }
+      }
+
+      .active_custom_nav_icon {
+        path {
+          fill: #FFFFFF;
+        }
+      }
+
+      .active-route {
+        color: #FFFFFF;
+        background-color: $sidenav-item-background;
+      }
+    }
+
+    .profile {
+      background: transparent;
+      box-shadow: unset;
+      padding: 1rem 0;
+      cursor: pointer;
+
+      &__header {
+        padding: 0;
+        align-items: center;
+
+        &__avatar {
+          display: flex;
+          align-items: start;
+
+          .img {
+            margin-bottom: 0;
+            margin-right: 0.7rem;
+          }
+        }
+
+        &__fullname {
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: space-between;
+          align-items: center;
+          flex: 1%;
+        }
+
+        &__title {
+          color: #FFFFFF;
+          font-weight: 600;
+          font-size: 14px;
+          line-height: 20px;
+          letter-spacing: 0;
+        }
+
+        &__subtitle {
+          color: #8D8E9C;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 18px;
+          letter-spacing: 0;
+        }
+      }
+    }
+  }
+}

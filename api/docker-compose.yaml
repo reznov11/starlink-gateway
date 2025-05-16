@@ -1,0 +1,19 @@
+services:
+  bakai_agent_proposals:
+    container_name: IMAGE_NAME
+    build:
+      context: superlink
+    ports:
+      - 8002:8001
+    env_file:
+      - ./env
+    networks:
+      - bakai_agent_proposals_network
+    volumes:
+      - ./logs:/app/logs
+      - ./static:/app/static
+    command: gunicorn -c gunicorn_config.py core.wsgi:application --reload
+
+networks:
+  bakai_agent_proposals_network:
+    driver: bridge

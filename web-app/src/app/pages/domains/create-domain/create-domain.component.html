@@ -1,0 +1,49 @@
+<div class="dialog_container">
+  <div
+    class="dialog_header"
+    fxLayout="row"
+    fxLayoutAlign="space-between center"
+  >
+    <h2 mat-dialog-title>
+      {{ !isEditMode ? "Добавление домена" : "Редактирование домена" }}
+    </h2>
+    <button mat-icon-button aria-label="Close dialog button" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <mat-dialog-content class="mat-typography">
+    <form role="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-unit">
+        <div class="input-label">Компания</div>
+        <mat-form-field>
+          <mat-select formControlName="partner" [(ngModel)]="selectedDomain">
+            <mat-option [value]="'house'">House</mat-option>
+            <mat-option [value]="'mashina'">Mashina</mat-option>
+            <mat-option [value]="'lalafo'">Lalafo</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Ссылка</div>
+        <mat-form-field>
+          <input type="text" formControlName="url" matInput placeholder="https://">
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Статус</div>
+        <mat-form-field>
+          <mat-select formControlName="status">
+            <mat-option [value]="'ACTIVE'">Активный</mat-option>
+            <mat-option [value]="'NOT_ACTIVE'">Неактивный</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-dialog-actions>
+        <button mat-flat-button class="cancel-btn" mat-dialog-close>Отменить</button>
+        <button mat-flat-button class="confirm-btn" [disabled]="form.invalid">
+          {{ !isEditMode ? 'Создать' : 'Обновить'}}
+        </button>
+      </mat-dialog-actions>
+    </form>
+  </mat-dialog-content>
+</div>

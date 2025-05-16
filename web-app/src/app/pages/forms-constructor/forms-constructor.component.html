@@ -1,0 +1,14 @@
+<div class="forms-container">
+  <div class="custom_table">
+    <app-dynamic-table
+      [columns]="formConstructorColumns"
+      [data]="displayedForms"
+      [totalItems]="forms.length / pageSize"
+      [pageSize]="pageSize"
+      [currentPage]="currentPage"
+      [pageSizeOptions]="pageSizeOptions"
+      (pageChanged)="onPageChange($event)"
+      (actionClicked)="handleAction($event)">
+    </app-dynamic-table>
+  </div>
+</div>

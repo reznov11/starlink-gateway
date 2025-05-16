@@ -1,0 +1,142 @@
+@use '@angular/material' as mat;
+
+$custom-primary-palette: mat.m2-define-palette(
+  (
+    50: #e3f2fd,
+    100: #bbdefb,
+    200: #90caf9,
+    300: #64b5f6,
+    400: #42a5f5,
+    500: #2196f3,
+    600: #1e88e5,
+    700: #1976d2,
+    800: #1565c0,
+    900: #0d47a1,
+    A100: #82b1ff,
+    A200: #448aff,
+    A400: #2979ff,
+    A700: #2962ff,
+    contrast: (
+      50: rgba(black, 0.87),
+      100: rgba(black, 0.87),
+      200: rgba(black, 0.87),
+      300: rgba(black, 0.87),
+      400: rgba(black, 0.87),
+      500: white,
+      600: white,
+      700: white,
+      800: white,
+      900: white,
+      A100: rgba(black, 0.87),
+      A200: white,
+      A400: white,
+      A700: white,
+    )
+  )
+);
+
+$custom-accent-palette: mat.m2-define-palette(
+  (
+    50: #fff8e1,
+    100: #ffecb3,
+    200: #ffe082,
+    300: #ffd54f,
+    400: #ffca28,
+    500: #ffc107,
+    600: #ffb300,
+    700: #ffa000,
+    800: #ff8f00,
+    900: #ff6f00,
+    A100: #ffe57f,
+    A200: #ffd740,
+    A400: #ffc400,
+    A700: #ffab00,
+    contrast: (
+      50: rgba(black, 0.87),
+      100: rgba(black, 0.87),
+      200: rgba(black, 0.87),
+      300: rgba(black, 0.87),
+      400: rgba(black, 0.87),
+      500: rgba(black, 0.87),
+      600: rgba(black, 0.87),
+      700: rgba(black, 0.87),
+      800: rgba(black, 0.87),
+      900: rgba(black, 0.87),
+      A100: rgba(black, 0.87),
+      A200: rgba(black, 0.87),
+      A400: black,
+      A700: black,
+    )
+  )
+);
+
+$custom-success-palette: mat.m2-define-palette(
+  (
+    50: #e2f3ea,
+    100: #b8e1cc,
+    200: #89d0ab,
+    300: #56bf89,
+    400: #2daf6f,
+    500: #009f56,
+    600: #008f4d,
+    700: #007d42,
+    800: #006935,
+    900: #004d25,
+    A100: #a9f5c5,
+    A200: #72e69e,
+    A400: #3ad775,
+    A700: #26c365,
+    contrast: (
+      50: rgba(black, 0.87),
+      100: rgba(black, 0.87),
+      200: rgba(black, 0.87),
+      300: white,
+      400: white,
+      500: white,
+      600: white,
+      700: white,
+      800: white,
+      900: white,
+      A100: rgba(black, 0.87),
+      A200: white,
+      A400: white,
+      A700: white,
+    )
+  )
+);
+
+$custom-warn-palette: mat.m2-define-palette(
+  (
+    50: #ffebee,
+    100: #ffcdd2,
+    200: #ef9a9a,
+    300: #e57373,
+    400: #ef5350,
+    500: #f44336,
+    600: #e53935,
+    700: #d32f2f,
+    800: #c62828,
+    900: #b71c1c,
+    A100: #ff8a80,
+    A200: #ff5252,
+    A400: #ff1744,
+    A700: #d50000,
+    contrast: (
+      50: rgba(black, 0.87),
+      100: rgba(black, 0.87),
+      200: rgba(black, 0.87),
+      300: white,
+      400: white,
+      500: white,
+      600: white,
+      700: white,
+      800: white,
+      900: white,
+      A100: rgba(black, 0.87),
+      A200: white,
+      A400: white,
+      A700: white,
+    )
+  )
+);
+

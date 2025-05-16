@@ -1,0 +1,137 @@
+.profile-card {
+  width: 684px;
+  margin: auto;
+  background: #FFFFFF;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: 'Inter', sans-serif;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.profile-main-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-name-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #141522;
+  font-family: 'Inter', sans-serif;
+}
+
+.profile-address {
+  font-size: 14px;
+  color: #8F8F8F;
+  font-family: 'Winston', 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+.profile-section-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+  color: #111827;
+  margin-bottom: 24px;
+}
+
+.profile-info-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.profile-info-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.profile-info-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1rem;
+  letter-spacing: -1px;
+  color: #5E6C86;
+  margin-bottom: 8px;
+}
+
+.profile-info-value {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.profile-role {
+  font-size: 1rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.profile-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.profile-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.profile-contact-item mat-icon {
+  color: #2563EB;
+  font-size: 20px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22C55E;
+  margin-right: 6px;
+}
+
+.profile-edit-btn {
+  margin-top: 0;
+  background: #4B82EC !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  padding: 14px 48px !important;
+  font-weight: 500;
+  font-size: 1rem;
+  min-width: 180px;
+  align-self: flex-start;
+  box-shadow: none;
+  text-transform: none;
+}

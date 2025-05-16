@@ -1,0 +1,47 @@
+<div class="page_container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>
+        <h1>iFrame</h1>
+        <h4>Вход в профиль</h4>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-unit full-width">
+          <label>Эл.почта</label>
+          <mat-form-field>
+            <input matInput type="email" formControlName="email" placeholder="Введите почту"/>
+          </mat-form-field>
+        </div>
+
+        <div class="form-unit full-width">
+          <label>Пароль</label>
+          <mat-form-field>
+            <input matInput formControlName="password" [type]="togglePassword() ? 'password' : 'text'"
+                   placeholder="Введите пароль"/>
+            <span class="lock-icon" matTextPrefix>
+              <mat-icon [svgIcon]="'custom_lock'"></mat-icon>
+            </span>
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="clickEvent($event)"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="togglePassword()"
+              type="button"
+            >
+              <mat-icon class="material-symbols-outlined">
+                {{togglePassword() ? 'visibility_off' : 'visibility'}}
+              </mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        <a [routerLink]="['forgot_password']" class="forgot_password">Не помню пароль</a>
+        <button class="login-btn" mat-flat-button [disabled]="loginForm.invalid">Войти</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

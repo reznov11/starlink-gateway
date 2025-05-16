@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block extrastyle %}
+
+<style>
+footer .float-right {
+    display: none !important;
+}
+
+.main-header .nav-link {
+    height: auto !important;
+}
+
+.calendarbox {
+    background: #FFFFFF !important;
+}
+
+.calendarbox :where(.calendarnav-previous, .calendarnav-next) {
+    top: 25px !important;
+}
+
+.datetimeshortcuts .date-icon {
+    background: unset !important;
+}
+
+.admindatefilter {
+    display: flex;
+    gap: 0.9rem;
+    align-items: baseline;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+{% if 'api/proposal/' in request.path %}
+#search_group button[type=submit] {
+    display: none;
+}
+{% endif %}
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock %}
+
+{% block branding %}
+{% endblock %}
+
+{% block nav-global %}
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript" src="{% static 'date-and-time-picker/js/jquery-2.1.4.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'date-and-time-picker/js/moment-with-locales.js' %}"></script>
+<script type="text/javascript" src="{% static 'date-and-time-picker/js/datetimepicker.js' %}"></script>
+{% endblock %}

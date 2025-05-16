@@ -1,0 +1,46 @@
+<div class="profile-card">
+  <div class="profile-header">
+    <ng-container *ngIf="user.avatar!; else initialsAvatar">
+      <div class="profile-avatar" [ngStyle]="{'background-image': 'url(' + user.avatar! + ')'}"></div>
+    </ng-container>
+    <ng-template #initialsAvatar>
+      <div class="profile-avatar profile-avatar-initials">
+        {{ user.first_name![0] || '' }}{{ user.last_name![0] || '' }}
+      </div>
+    </ng-template>
+    <div class="profile-main-info">
+      <div class="profile-name-row">
+        <div class="profile-name">{{ user.fullname! }}</div>
+        <div class="profile-address">{{ user.job_title! }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="profile-section-title">Персональные данные</div>
+  <div class="profile-info-details">
+    <div class="profile-info-item">
+      <div class="profile-info-label">Имя и Фамилия</div>
+      <div class="profile-info-value">{{ user.fullname! || '-' }}</div>
+    </div>
+    <div class="profile-info-item">
+      <div class="profile-info-label">Номер телефона</div>
+      <div class="profile-info-value">{{ user.phone_number! || '-' }}</div>
+    </div>
+    <div class="profile-info-item">
+      <div class="profile-info-label">Должность</div>
+      <div class="profile-info-value">{{ user.job_title! || '-' }}</div>
+    </div>
+    <div class="profile-info-item">
+      <div class="profile-info-label">Почта</div>
+      <div class="profile-info-value">{{ user.email! || '-' }}</div>
+    </div>
+    <div class="profile-info-item">
+      <div class="profile-info-label">Локация</div>
+      <div class="profile-info-value">{{ user.location! || '-' }}</div>
+    </div>
+    <div class="profile-info-item">
+      <div class="profile-info-label">Дата рождения</div>
+      <div class="profile-info-value">{{ user.birth_date! | date:'dd/MM/YYYY' }}</div>
+    </div>
+  </div>
+  <button mat-flat-button color="primary" class="profile-edit-btn" (click)="openEditProfileDialog()">Редактировать</button>
+</div>

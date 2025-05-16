@@ -1,0 +1,254 @@
+<div class="form-constructor">
+  <div class="form-constructor__sidebar">
+    <h2 class="sidebar__title">Элементы</h2>
+    <div
+      class="sidebar__elements"
+      cdkDropList
+      #sidebarList="cdkDropList"
+      [cdkDropListData]="availableElements"
+      [cdkDropListConnectedTo]="[formList]"
+      (cdkDropListDropped)="onDrop($event)"
+    >
+      <div
+        *ngFor="let element of availableElements"
+        class="sidebar__element"
+        cdkDrag
+        [cdkDragData]="element"
+      >
+        <div class="element__icon">
+          <mat-icon>{{ element.icon }}</mat-icon>
+        </div>
+        <div class="element__info">
+          <span class="element__label">{{ element.label }}</span>
+          <span class="element__description">{{ element.description }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-constructor__content">
+    <div class="form-constructor__form-area">
+      <div class="form-constructor__header">
+        <div class="form-constructor__actions">
+          <button mat-stroked-button (click)="onPreview()">
+            <mat-icon [svgIcon]="'custom_preview'"></mat-icon>
+            Предпросмотр
+          </button>
+          <button mat-stroked-button (click)="onCancel()">Отменить</button>
+          <button mat-flat-button color="primary" (click)="onSave()">
+            {{ !isEditMode ? 'Создать' : 'Редактировать' }}
+          </button>
+        </div>
+      </div>
+
+      <form [formGroup]="formGroup">
+        <div class="form-unit">
+          <div class="input-label">Компания</div>
+          <mat-form-field>
+            <mat-select formControlName="partner" [(ngModel)]="selected">
+              <mat-option [value]="'house'">House</mat-option>
+              <mat-option [value]="'mashina'">Mashina</mat-option>
+              <mat-option [value]="'lalafo'">Lalafo</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="form-unit">
+          <div class="input-label">Название формы</div>
+          <mat-form-field appearance="outline" class="form-name-field">
+            <input
+              matInput
+              formControlName="title"
+              placeholder="Введите название формы"
+            />
+          </mat-form-field>
+        </div>
+      </form>
+
+      <div
+        class="form-constructor__dropzone"
+        cdkDropList
+        #formList="cdkDropList"
+        [cdkDropListData]="formElements"
+        [cdkDropListConnectedTo]="[sidebarList]"
+        (cdkDropListDropped)="onDrop($event)"
+        [ngStyle]="{
+          'border-width': formElements.length ? '0' : '',
+          'background': formElements.length ? 'transparent' : ''
+        }"
+      >
+        <div class="form-elements-grid">
+          <div
+            *ngFor="let element of formElements; let i = index"
+            class="form-element-wrapper"
+          >
+            <div
+              class="form-element"
+              [class.selected]="element.isSelected"
+              cdkDrag
+              [cdkDragData]="element"
+            >
+              <div class="form-element__drag-handle" cdkDragHandle (click)="selectElement(element.id)">
+                <mat-icon [svgIcon]="'custom_drag_indicator'"></mat-icon>
+              </div>
+              <div class="form-element__header">
+                <div class="form-element__type-info">
+                  <mat-icon>{{ element.icon }}</mat-icon>
+                  <span class="form-element-label">{{ element.label }}</span>
+                </div>
+                <button mat-icon-button (click)="removeElement(i)">
+                  <mat-icon [svgIcon]="'custom_delete'"></mat-icon>
+                </button>
+              </div>
+              <div [ngSwitch]="element.type" class="form-element__content">
+
+                <div *ngSwitchCase="'heading'" class="form-unit">
+                  <mat-form-field class="full-width" appearance="outline">
+                    <input matInput placeholder="Введите заголовок" class="heading-input" [(ngModel)]="element.value">
+                  </mat-form-field>
+                </div>
+
+                <div *ngSwitchCase="'info'" class="form-unit">
+                  <mat-form-field class="full-width" appearance="outline">
+                    <textarea matInput placeholder="Введите информационный текст" class="info-input" rows="4" [(ngModel)]="element.value"></textarea>
+                  </mat-form-field>
+                </div>
+
+                <div *ngSwitchCase="'paragraph'" class="form-unit">
+                  <mat-form-field class="full-width" appearance="outline">
+                    <textarea matInput placeholder="Введите текст" class="paragraph-input" rows="7" [(ngModel)]="element.value"></textarea>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-unit">
+                  <mat-form-field class="full-width" *ngSwitchCase="'textfield'" appearance="outline">
+                    <input matInput [placeholder]="element.description" />
+                  </mat-form-field>
+                </div>
+
+                <div class="form-unit">
+                  <mat-form-field class="full-width" *ngSwitchCase="'phone'" appearance="outline">
+                    <input matInput placeholder="+996" type="tel" />
+                  </mat-form-field>
+                </div>
+
+                <div *ngSwitchCase="'dropdown'" class="preview-dropdown full-width">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-select [placeholder]="element.description">
+                      <mat-option *ngFor="let option of element.options" [value]="option.id">
+                        {{ option.value }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <div class="options-manager">
+                    <div class="options-list">
+                      <div *ngFor="let option of element.options" class="option-item">
+                        <div class="option-item__content">
+                          <span>{{ option.value }}</span>
+                          <mat-checkbox
+                            class="option-item__default"
+                            [checked]="option.id === element.defaultValue"
+                            (change)="setDefaultOption(element, option.id)">
+                            По умолчанию
+                          </mat-checkbox>
+                        </div>
+                        <button mat-icon-button (click)="removeOption(element, option.id)">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="add-option">
+                      <mat-form-field appearance="outline">
+                        <input matInput [(ngModel)]="element.newOptionValue" placeholder="Добавить значение">
+                      </mat-form-field>
+                      <button mat-icon-button (click)="addOption(element)">
+                        <mat-icon>add</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div *ngSwitchCase="'radio'" class="preview-radio">
+                  <mat-radio-group>
+                    <div *ngFor="let option of element.options" class="radio-option">
+                      <div class="option-item__content">
+                        <mat-radio-button [value]="option.id">
+                          {{ option.value }}
+                        </mat-radio-button>
+                        <mat-checkbox
+                          class="option-item__default"
+                          [checked]="option.id === element.defaultValue"
+                          (change)="setDefaultOption(element, option.id)">
+                          По умолчанию
+                        </mat-checkbox>
+                      </div>
+                      <button mat-icon-button (click)="removeOption(element, option.id)">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  </mat-radio-group>
+                  <div class="add-option">
+                    <mat-form-field appearance="outline">
+                      <input matInput [(ngModel)]="element.newOptionValue" placeholder="Добавить значение">
+                    </mat-form-field>
+                    <button mat-icon-button (click)="addOption(element)">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div *ngSwitchCase="'checkbox'" class="preview-checkbox">
+                  <div *ngFor="let option of element.options" class="checkbox-option">
+                    <mat-checkbox [value]="option.id">
+                      {{ option.value }}
+                    </mat-checkbox>
+                    <button mat-icon-button (click)="removeOption(element, option.id)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                  <div class="add-option">
+                    <mat-form-field appearance="outline">
+                      <input matInput [(ngModel)]="element.newOptionValue" placeholder="Добавить значение">
+                    </mat-form-field>
+                    <button mat-icon-button (click)="addOption(element)">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div *ngSwitchCase="'image'" class="preview-media" (click)="triggerFileInput(element)">
+                  <div *ngIf="!element.value" class="preview-media__placeholder">
+                    <mat-icon>image</mat-icon>
+                    <span>Нажмите для загрузки изображения</span>
+                  </div>
+                  <div *ngIf="element.value" class="preview-media__content">
+                    <img [src]="element.value" alt="Uploaded image" class="preview-media__image">
+                    <button mat-icon-button class="preview-media__remove" (click)="$event.stopPropagation(); element.value = undefined; element.file = undefined">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div *ngSwitchCase="'video'" class="preview-media" (click)="triggerFileInput(element)">
+                  <div *ngIf="!element.value" class="preview-media__placeholder">
+                    <mat-icon>videocam</mat-icon>
+                    <span>Нажмите для загрузки видео</span>
+                  </div>
+                  <div *ngIf="element.value" class="preview-media__content">
+                    <video [src]="element.value" controls class="preview-media__video"></video>
+                    <button mat-icon-button class="preview-media__remove" (click)="$event.stopPropagation(); element.value = undefined; element.file = undefined">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="formElements.length === 0"
+          class="form-constructor__empty-state"
+        >
+          <mat-icon [svgIcon]="'custom_dropzone_add'"></mat-icon>
+          <span>Перетащите элемент</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

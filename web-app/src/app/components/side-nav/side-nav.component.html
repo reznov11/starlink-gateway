@@ -1,0 +1,72 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Side Navbar -->
+  <mat-sidenav #sidenav mode="side" opened="true" class="sidenav">
+    @for(item of sideNavItems; track item; let mainIndex = $index, e = $even) {
+      <mat-nav-list [ngClass]="{'top_nav_list': mainIndex === 0}">
+        @for(nav of item; track nav.title; let navIndex = $index) {
+          <ng-container>
+            <a class="logo" *ngIf="navIndex === 0 && mainIndex === 0" routerLink="/dashboard/constructor">
+              <h1>iFrame</h1>
+            </a>
+            <mat-list-item
+              [routerLink]="nav.route"
+              *ngIf="nav.no_role || hasAllowedRoles(nav.activate_roles)"
+              [routerLinkActive]="'active-route'">
+              <mat-icon matListItemIcon
+                [ngClass]="{
+                  'active_custom_nav_icon': isRouteActive(nav.route),
+                  'custom_nav_icon': !isRouteActive(nav.route)
+                }"
+                [svgIcon]="nav.icon_name"></mat-icon>
+              <div matListItemTitle [innerHTML]="nav.title"></div>
+            </mat-list-item>
+          </ng-container>
+      }
+      </mat-nav-list>
+    }
+    <mat-nav-list>
+      <mat-card class="profile"
+      #tooltip="matTooltip"
+      matTooltip="Мой профиль: Аммар А."
+      [matTooltipPosition]="'above'"
+      [routerLink]="['/dashboard/users/profile']"
+      >
+        <mat-card-header class="profile__header">
+          <ng-container *ngIf="userProfile.avatar!; else initialsAvatar">
+            <div class="profile-avatar profile-avatar-initials-sm"
+                 [ngStyle]="{'background-image': 'url(' + userProfile.avatar! + ')'}"></div>
+          </ng-container>
+          <ng-template #initialsAvatar>
+            <div class="profile-avatar profile-avatar-initials profile-avatar-initials-sm">
+              {{ userProfile.first_name![0] || '' }}{{ userProfile.last_name![0] || '' }}
+            </div>
+          </ng-template>
+          <div class="profile__header__fullname">
+            <div>
+              <mat-card-title class="profile__header__title">
+                {{ userProfile.fullname! || 'Мой профиль' }}
+              </mat-card-title>
+              <mat-card-subtitle class="profile__header__subtitle">
+                {{ userProfile.job_title! || '-' }}
+              </mat-card-subtitle>
+            </div>
+            <div class="indicator">
+              <mat-icon [ngStyle]="{'color': '#FFFFFF'}">chevron_right</mat-icon>
+            </div>
+          </div>
+        </mat-card-header>
+      </mat-card>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Main Content Area -->
+  <mat-sidenav-content>
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Router Outlet -->
+    <div class="container">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

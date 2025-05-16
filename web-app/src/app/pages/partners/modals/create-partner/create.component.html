@@ -1,0 +1,53 @@
+<div class="dialog_container">
+  <div class="dialog_header" fxLayout="row" fxLayoutAlign="space-between center">
+    <h2 mat-dialog-title>{{ !isEditMode ? 'Добавление компании' : 'Добавление компанию'}}</h2>
+    <button mat-icon-button aria-label="Close dialog button" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <mat-dialog-content class="mat-typography">
+    <form role="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-unit">
+        <div class="input-label">Название</div>
+        <mat-form-field>
+          <input type="text" formControlName="name" matInput placeholder="Впишите название">
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">URL компании</div>
+        <mat-form-field>
+          <input type="text" formControlName="domain" matInput placeholder="https://">
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">ИНН компании</div>
+        <mat-form-field>
+          <input type="text" formControlName="inn" matInput placeholder="Впишите ИНН">
+          <mat-hint>ИНН должен быть ровно 14 цифр</mat-hint>
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Категория бизнеса</div>
+        <mat-form-field>
+          <mat-select formControlName="category">
+            <mat-option [value]="'Машины'">Машины</mat-option>
+            <mat-option [value]="'Дома'">Дома</mat-option>
+            <mat-option [value]="'Квартиры'">Квартиры</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="form-unit">
+        <div class="input-label">Контактное лицо</div>
+        <mat-form-field>
+          <input type="text" formControlName="person_contact" matInput placeholder="Напишите ФИО">
+        </mat-form-field>
+      </div>
+      <mat-dialog-actions>
+        <button mat-flat-button class="cancel-btn" mat-dialog-close>Отменить</button>
+        <button mat-flat-button class="confirm-btn" [disabled]="form.invalid">
+          {{ !isEditMode ? 'Создать' : 'Обновить'}}
+        </button>
+      </mat-dialog-actions>
+    </form>
+  </mat-dialog-content>
+</div>

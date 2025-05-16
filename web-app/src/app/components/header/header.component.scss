@@ -1,0 +1,68 @@
+.header-container {
+  max-width: 100%;
+  min-height: 96px;
+  padding: 0 1rem;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+
+  .welcome-container {
+    h2, small {
+      text-align: left;
+      text-underline-position: from-font;
+      text-decoration-skip-ink: none;
+    }
+
+    h2 {
+      color: #16151C;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 30px;
+    }
+
+    small {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 22px;
+      color: #A2A1A8;
+    }
+  }
+
+  .actions-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+
+    button {
+      border-radius: 8px;
+      padding: 14px 32px;
+      gap: 16px;
+      background: #4B82EC;
+    }
+
+    .logout-btn {
+      background: #DA6767;
+    }
+
+    .user_avatar {
+      width: 40px;
+      height: 40px;
+    }
+  }
+}
+
+.dialog_container {
+  background: #FFFFFF;
+
+  mat-form-field {
+    ::ng-deep {
+      .mdc-text-field {
+        border-radius: 8px !important;
+        border: unset !important;
+      }
+    }
+  }
+}

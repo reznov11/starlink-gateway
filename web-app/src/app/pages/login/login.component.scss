@@ -1,0 +1,144 @@
+$card-title-color: #201F1F;
+$card-subtitle-color: #7B7F88;
+$card-background: #FFFFFF;
+$container-background: #F5F5F5;
+$disabled-login-btn-background: #a9a9a9;
+
+.page_container {
+  background: url("/assets/login_background.png") no-repeat, center center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-flow: column wrap;
+
+  mat-card-title {
+    h1 {
+      font-weight: 600;
+      font-size: 30.17px;
+      line-height: 25.14px;
+      letter-spacing: 0;
+    }
+    h4 {
+      font-weight: 400;
+      font-size: 24px;
+      line-height: 150%;
+      letter-spacing: 0;
+      text-align: center;
+      margin: 0;
+    }
+  }
+
+  .login-logo {
+    margin-bottom: 2rem;
+    img {
+      max-width: 20%;
+      display: block;
+      margin: 0 auto;
+      object-fit: contain;
+      object-position: center;
+    }
+  }
+
+  mat-card-content {
+    form {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+      justify-content: center;
+
+      .forgot_password {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 150%;
+        letter-spacing: 0;
+        text-decoration: underline;
+        text-decoration-style: solid;
+        text-decoration-thickness: 0;
+        color: #9C9CA4;
+        margin-bottom: 2rem;
+      }
+
+      .registration {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 20px;
+        letter-spacing: 0;
+        vertical-align: middle;
+        color: #3D4A5C;
+        text-decoration: none;
+      }
+
+      .login-btn {
+        width: 400px;
+        height: 48px;
+        border-radius: 8px;
+        padding: 14px 32px;
+        gap: 16px;
+        background: #4B82EC;
+      }
+
+      .login-btn:disabled {
+        background: $disabled-login-btn-background;
+        color: #FFFFFF;
+      }
+    }
+  }
+
+  .login-card {
+    border-radius: 10px;
+    width: 100%;
+    max-width: 460px;
+    padding: 30px 15px;
+    background-color: $card-background;
+    box-shadow: unset !important;
+
+    mat-card-header {
+      margin-bottom: 2rem;
+      justify-content: center;
+      h1 {
+        color: $card-title-color;
+        text-align: center;
+        font-size: 44px;
+        font-weight: 600;
+        line-height: 61.6px;
+        letter-spacing: -0.02em;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        margin: 0;
+      }
+      p {
+        margin: 0 0 2rem;
+        color: $card-subtitle-color;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 22.4px;
+        letter-spacing: -0.02em;
+        text-align: center;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+      }
+    }
+
+    mat-form-field {
+      width: 100%;
+
+      .lock-icon {
+        margin-right: 0.8rem;
+        vertical-align: top;
+
+        &:after {
+          content: "";
+          background: #D7DFE9;
+          position: absolute;
+          bottom: 0;
+          left: 45px;
+          height: 16px;
+          width: 2px;
+          top: 1.3rem;
+        }
+      }
+    }
+  }
+}
