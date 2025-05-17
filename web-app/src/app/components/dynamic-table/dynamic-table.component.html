@@ -28,13 +28,24 @@
 
           <div *ngSwitchCase="'user'">
             <div class="user_card">
-              <div><img src="/assets/profile_avatar.png" alt="Avatar"></div>
+              @if(element[column.key].avatar) {
+                <div class="profile-avatar profile-avatar-initials-sm"
+                  [ngStyle]="{'background-image': 'url(' + element[column.key].avatar! + ')'}"></div>
+              } @else {
+                <div class="profile-avatar profile-avatar-initials profile-avatar-initials-sm">
+                  {{ element[column.key].first_name![0] || '' }}{{ element[column.key].last_name![0] || '' }}
+                </div>
+              }
               <div>{{element[column.key].fullname}}</div>
             </div>
           </div>
 
           <span *ngSwitchCase="'partner'">
-            <u>{{element[column.key].name || element[column.key]}}</u>
+            @if(element[column.key]) {
+              <u>{{element[column.key].name || element[column.key]}}</u>
+            } @else {
+              <u>-</u>
+            }
           </span>
 
           <span *ngSwitchCase="'boolean'" class="item_status"

@@ -8,6 +8,7 @@ import {CreatePartnerComponent} from '@pages/partners/modals/create-partner/crea
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PartnerService } from '@services/api/partner';
 
 function generateDomain(partner: Partner): Domain {
   return {
@@ -75,22 +76,44 @@ export class PartnersComponent {
   constructor(
     private headerService: HeaderActionService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private partnerService: PartnerService
   ) {
-    this.updateDisplayedPartners();
-    this.headerService.setComponent(CreatePartnerComponent, 'Добавить компанию');
+    this.headerService.setComponent(
+      CreatePartnerComponent, 
+      'Добавить компанию',
+      async () => {
+        await this.getPartnersList();
+      }
+    );
   }
 
-  onPageChange(event: PageEvent) {
+  async ngOnInit() {
+    await this.getPartnersList();
+  }
+
+  async onPageChange(event: PageEvent) {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.updateDisplayedPartners();
+    await this.getPartnersList();
   }
 
-  private updateDisplayedPartners() {
-    const startIndex = this.currentPage * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.displayedPartners = this.partners.slice(startIndex, endIndex);
+  private async getPartnersList() {
+    (await this.partnerService.getPartners()).subscribe({
+      next: (partners: Partner[]) => {
+        this.partners = partners;
+
+        const startIndex = this.currentPage * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        this.displayedPartners = this.partners.slice(startIndex, endIndex);
+      },
+      error: (err: any) => {
+        this.snackBar.open('Ошибка при получении компаний', 'Закрыть', {
+          duration: 3000,
+          verticalPosition: 'top',
+        });
+      }
+    });
   }
 
   get totalPages(): number {
@@ -121,10 +144,12 @@ export class PartnersComponent {
 
     dialogRef.afterClosed().subscribe(async (result: Partner) => {
       if (result) {
-        console.log('Edit partner', result);
         result.created_at = partner.created_at;
+
         this.partners = this.partners.map(p => p.id === partner.id ? result : p);
-        this.updateDisplayedPartners();
+
+        await this.getPartnersList();
+
         this.snackBar.open('Компания обновлена', 'Закрыть', {
           duration: 3000,
           verticalPosition: 'top',
@@ -149,12 +174,23 @@ export class PartnersComponent {
 
     dialogRef.afterClosed().subscribe(async (result: boolean) => {
       if (result) {
-        console.log('Delete partner', result);
-        this.snackBar.open('Компания удалена', 'Закрыть', {
-          duration: 3000,
-          verticalPosition: 'top',
-        });
-        // TODO: send request to delete partner 
+        (await this.partnerService.deletePartner(partner.id)).subscribe(({
+          next: async () => {
+            this.snackBar.open('Компания удалена', 'Закрыть', {
+              duration: 3000,
+              verticalPosition: 'top',
+            });
+            await this.getPartnersList();
+          },
+          error: (err: any) => {
+            this.snackBar.open('Ошибка при удалении компании', 'Закрыть', {
+              duration: 3000,
+              verticalPosition: 'top',
+            });
+
+            console.log('Ошибка при удалении компании', err);
+          }
+        }));
       }
     });
   }

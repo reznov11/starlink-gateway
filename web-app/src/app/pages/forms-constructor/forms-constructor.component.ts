@@ -9,6 +9,7 @@ import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
+import { FormService } from '@app/services/api/form';
 
 // Generate 100 records
 const FORMS: any[] = Array.from({ length: 100 }, () => generateFormConstructor());
@@ -47,22 +48,45 @@ export class FormsConstructorComponent {
     private headerService: HeaderActionService,
     private router: Router,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private formService: FormService
   ) {
-    this.updateDisplayedForms();
-    this.headerService.setComponent(CreateFormComponent, 'Создать форму');
+    this.headerService.setComponent(
+      CreateFormComponent, 
+      'Создать форму',
+      async () => {
+        await this.getFormsList();
+      }
+    );
   }
 
-  onPageChange(event: PageEvent) {
+  async ngOnInit() {
+    await this.getFormsList();
+  }
+
+  async onPageChange(event: PageEvent) {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.updateDisplayedForms();
+    await this.getFormsList();
   }
 
-  private updateDisplayedForms() {
-    const startIndex = this.currentPage * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.displayedForms = this.forms.slice(startIndex, endIndex);
+  private async getFormsList() {
+    (await this.formService.getForms()).subscribe(({
+      next: (forms: FormConstructor[]) => {
+        this.forms = forms;
+
+        const startIndex = this.currentPage * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        this.displayedForms = this.forms.slice(startIndex, endIndex);
+      },
+      error: (error: any) => {
+        console.error(error);
+        this.snackBar.open('Ошибка при получении форм', 'Закрыть', {
+          duration: 3000,
+          verticalPosition: 'top',
+        });
+      }
+    }));
   }
 
   get totalPages(): number {
@@ -100,12 +124,22 @@ export class FormsConstructorComponent {
 
     dialogRef.afterClosed().subscribe(async (result: boolean) => {
       if (result) {
-        console.log('Delete form', result);
-        this.snackBar.open('Форма удалена', 'Закрыть', {
-          duration: 3000,
-          verticalPosition: 'top',
-        });
-        // TODO: send request to delete form
+        (await this.formService.deleteForm(form.id)).subscribe(({
+          next: async () => {
+            this.snackBar.open('Форма удалена', 'Закрыть', {
+              duration: 3000,
+              verticalPosition: 'top',
+            });
+            await this.getFormsList();
+          },
+          error: (error: any) => {
+            console.error(error);
+            this.snackBar.open('Ошибка при удалении формы', 'Закрыть', {
+              duration: 3000,
+              verticalPosition: 'top',
+            });
+          }
+        }));
       }
     });
   }

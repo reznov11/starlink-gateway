@@ -11,7 +11,7 @@ export const MainNavItemsList: NavItem[] = [
     title: 'Компании',
     route: '/dashboard/partners',
     icon_name: 'custom_companies',
-    activate_roles: ['super_admin', 'employee']
+    activate_roles: ['super_admin']
   },
   {
     title: 'Сотрудники',

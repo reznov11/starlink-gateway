@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PartnersConfig(AppConfig):
+class ConstructorConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.partners'
+    name = 'apps.constructor'

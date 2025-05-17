@@ -24,21 +24,6 @@ import { CreateUserComponent } from '../modals/create-user/create-user.component
 })
 export class UserProfileComponent implements OnInit {
   public user: UserProfile = {} as UserProfile;
-
-  // public user: UserProfile = {
-  //   id: '1',
-  //   first_name: 'Актан',
-  //   last_name: 'Юсупов',
-  //   avatar: '/assets/profile_avatar.png',
-  //   fullname: 'Актан Юсупов',
-  //   role: 'employee',
-  //   email: 'aktan.yusupov@email.com',
-  //   job_title: 'Хакер',
-  //   location: 'Бишкек, Кыргызстан',
-  //   birth_date: '19.10.2004',
-  //   phone_number: '+996 555 123 456'
-  // };
-
   private dialogSettings: MatDialogConfig = {
     height: 'auto',
     width: '700px',

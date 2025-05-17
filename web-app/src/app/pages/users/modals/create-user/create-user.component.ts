@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { UserProfile } from '@app/services/auth.service';
 import {UserService} from '@services/api/user';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-create-user',
@@ -47,7 +48,8 @@ export class CreateUserComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) private data: { user: UserProfile } | null,
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CreateUserComponent>,
-    private userService: UserService
+    private userService: UserService,
+    private snackBar: MatSnackBar
   ) {
     const phoneRegex = /^\+996(?:\s?\d{3}){3}$/;
     const user: UserProfile = this.data?.user || {} as UserProfile;
@@ -140,6 +142,10 @@ export class CreateUserComponent implements OnInit {
         },
         error: (err: any) => {
           console.log('Error updating user profile', err);
+          this.snackBar.open('Ошибка при обновлении профиля пользователя', 'Закрыть', {
+            duration: 3000,
+            verticalPosition: 'top',
+          });
         }
       })
     } else {
@@ -151,6 +157,10 @@ export class CreateUserComponent implements OnInit {
         },
         error: (err: any) => {
           console.log('Error while adding a new user', err);
+          this.snackBar.open('Ошибка при добавлении нового пользователя', 'Закрыть', {
+            duration: 3000,
+            verticalPosition: 'top',
+          });
         }
       })
     }

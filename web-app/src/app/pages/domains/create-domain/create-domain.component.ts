@@ -10,7 +10,9 @@ import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSelectModule} from '@angular/material/select';
-import {Domain, DomainStatus} from '@app/pages/forms-constructor/interfaces';
+import {Domain, DomainStatus, Partner} from '@app/pages/forms-constructor/interfaces';
+import {DomainService} from '@app/services/api/domain';
+import {PartnerService} from '@app/services/api/partner';
 
 @Component({
   selector: 'app-create-domain',
@@ -35,36 +37,61 @@ export class CreateDomainComponent implements OnInit {
   public form: FormGroup;
   public imagePreview: string | ArrayBuffer | null = null;
   public isEditMode = false;
-  public selectedDomain: string = 'house';
+  public partners: Partner[] = [];
 
   constructor(
     private fb: FormBuilder,
+    private domainService: DomainService,
+    private partnerService: PartnerService,
     public dialogRef: MatDialogRef<CreateDomainComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { domain: Domain } | null
   ) {
     const urlRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
 
     this.form = this.fb.group({
-      partner: [this.data?.domain?.partner || '', [Validators.required]],
+      partner: [this.data?.domain?.partner?.id || ''],
       url: [this.data?.domain?.url || '', [Validators.required, Validators.pattern(urlRegex)]],
       status: [this.data?.domain?.status || DomainStatus.ACTIVE, [Validators.required]],
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.data?.domain) this.isEditMode = true;
+    await this.getPartners();
   }
 
-  public onSubmit() {
+  public async onSubmit() {
     if (this.form.valid) {
-      this.dialogRef.close(
-        {
-          ...this.form.value,
-          domain: {
-            url: this.form.value.domain
+      if (this.isEditMode) {
+        (await this.domainService.updateDomain(this.data?.domain?.id!, this.form.value)).subscribe(({
+          next: (domain: Domain) => {
+            this.dialogRef.close(domain);
+          },
+          error: (err: any) => {
+            console.log('Error updating domain', err);
+          },
+        }));
+      } else {
+        (await this.domainService.createDomain(this.form.value)).subscribe({
+          next: (domain: Domain) => {
+            this.dialogRef.close(domain);
+          },
+          error: (err: any) => {
+            console.log('Error creating domain', err);
           }
-        }
-      );
+        });
+      }
     }
+  }
+
+  public async getPartners() {
+    (await this.partnerService.getPartners()).subscribe({
+      next: (partners: Partner[]) => {
+        this.partners = partners;
+      },
+      error: (err: any) => {
+        console.log('Error getting partners', err);
+      }
+    });
   }
 }

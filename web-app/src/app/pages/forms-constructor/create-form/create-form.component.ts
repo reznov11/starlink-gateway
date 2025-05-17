@@ -11,12 +11,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PreviewFormModalComponent } from './preview-form-modal/preview-form-modal.component';
-import {FormElement, FormElementOption, PartnerForm} from '@pages/forms-constructor/create-form/models';
-import {FormConstructor} from '@pages/forms-constructor/interfaces';
-import {faker} from '@faker-js/faker';
+import { FormElement, FormElementOption } from '@pages/forms-constructor/create-form/models';
+import { FormConstructor, Partner } from '@pages/forms-constructor/interfaces';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormService } from '@app/services/api/form';
+import { PartnerService } from '@app/services/api/partner';
 
 @Component({
   selector: 'app-create-form',
@@ -39,178 +41,16 @@ import {faker} from '@faker-js/faker';
   ]
 })
 export class CreateFormComponent implements OnInit {
-  formId: string;
-  formGroup: FormGroup;
-  selectedElementId: string | null = null;
+  private formId: string;
+  public formGroup: FormGroup;
+  public selectedElementId: string | null = null;
 
-  isEditMode: boolean = false;
-  selected: string = 'house';
-  components_total: number = 0;
+  public isEditMode: boolean = false;
+  public components_total: number = 0;
+  public partners: Partner[] = [];
 
-  formElements: FormElement[] = [
-    {
-      "id": "radio_1746740477460",
-      "type": "radio",
-      "label": "Радио",
-      "description": "Выбор одного варианта",
-      "icon": "radio_button_checked",
-      "options": [
-        {
-          "id": "radio_option_1746740481281",
-          "value": "Автокредит"
-        },
-        {
-          "id": "radio_option_1746740485487",
-          "value": "Автофинансирование по исламским принципам"
-        }
-      ],
-      "isSelected": false,
-      "newOptionValue": ""
-    },
-    {
-      "id": "heading_1746740506202",
-      "type": "heading",
-      "label": "Заголовок",
-      "description": "Добавьте заголовок для формы",
-      "icon": "title",
-      "isSelected": false,
-      "value": "Ваше ФИО"
-    },
-    {
-      "id": "textfield_1746740516100",
-      "type": "textfield",
-      "label": "Текстовое поле",
-      "description": "Поле для ввода текста",
-      "icon": "text_fields",
-      "isSelected": false
-    },
-    {
-      "id": "heading_1746740435846",
-      "type": "heading",
-      "label": "Заголовок",
-      "description": "Добавьте заголовок для формы",
-      "icon": "title",
-      "isSelected": false,
-      "value": "Номер телефона"
-    },
-    {
-      "id": "phone_1746740456292",
-      "type": "phone",
-      "label": "Номер телефона",
-      "description": "Поле для ввода номера телефона",
-      "icon": "phone",
-      "isSelected": false
-    },
-    {
-      "id": "heading_1746740294081",
-      "type": "heading",
-      "label": "Заголовок",
-      "description": "Добавьте заголовок для формы",
-      "icon": "title",
-      "isSelected": false,
-      "value": "Стоимость авто, сом"
-    },
-    {
-      "id": "textfield_1746740345123",
-      "type": "textfield",
-      "label": "Текстовое поле",
-      "description": "Поле для ввода текста",
-      "icon": "text_fields",
-      "isSelected": false
-    },
-    {
-      "id": "heading_1746740296667",
-      "type": "heading",
-      "label": "Заголовок",
-      "description": "Добавьте заголовок для формы",
-      "icon": "title",
-      "isSelected": false,
-      "value": "Первоначальный взнос, сом"
-    },
-    {
-      "id": "textfield_1746740351565",
-      "type": "textfield",
-      "label": "Текстовое поле",
-      "description": "Поле для ввода текста",
-      "icon": "text_fields",
-      "isSelected": false
-    },
-    {
-      "id": "heading_1746740309311",
-      "type": "heading",
-      "label": "Заголовок",
-      "description": "Добавьте заголовок для формы",
-      "icon": "title",
-      "isSelected": false,
-      "value": "Срок кредита"
-    },
-    {
-      "id": "dropdown_1746740359927",
-      "type": "dropdown",
-      "label": "Выпадающий список",
-      "description": "Выберите из списка",
-      "icon": "arrow_drop_down_circle",
-      "options": [
-        {
-          "id": "dropdown_option_1746740362754",
-          "value": "1"
-        },
-        {
-          "id": "dropdown_option_1746740364287",
-          "value": "2"
-        },
-        {
-          "id": "dropdown_option_1746740365447",
-          "value": "4"
-        }
-      ],
-      "isSelected": false,
-      "newOptionValue": ""
-    },
-    {
-      "id": "heading_1746740317340",
-      "type": "heading",
-      "label": "Заголовок",
-      "description": "Добавьте заголовок для формы",
-      "icon": "title",
-      "isSelected": false,
-      "value": "Ежемесячный платеж"
-    },
-    {
-      "id": "paragraph_1746740321275",
-      "type": "paragraph",
-      "label": "Подзаголовок",
-      "description": "Добавьте описательный текст",
-      "icon": "subject",
-      "isSelected": false,
-      "value": "43 550 сом"
-    },
-    {
-      "id": "info_1746740380227",
-      "type": "info",
-      "label": "Текстовый блок",
-      "description": "Информационный текст",
-      "icon": "info",
-      "isSelected": false,
-      "value": "Оставьте заявку и с вами свяжется специалист и ответит на все интересующие вас вопросы и подберет самые лучшие условия"
-    },
-    {
-      "id": "checkbox_1746740556792",
-      "type": "checkbox",
-      "label": "Чекбокс",
-      "description": "Выбор нескольких вариантов",
-      "icon": "check_box",
-      "options": [
-        {
-          "id": "checkbox_option_1746740561715",
-          "value": "Я даю свое согласие на передачу моего ФИО и номера телефона ОАО \"Бакай Банк\" в целях обратной связи по вопросам кредитования."
-        }
-      ],
-      "isSelected": false,
-      "newOptionValue": ""
-    }
-  ];
-  availableElements: FormElement[] = [
+  public formElements: FormElement[] = [];
+  public readonly availableElements: FormElement[] = [
     {
       id: 'heading',
       type: 'heading',
@@ -287,28 +127,79 @@ export class CreateFormComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private dialog: MatDialog,
-    private currentRouter: ActivatedRoute
+    private currentRouter: ActivatedRoute,
+    private formService: FormService,
+    private snackBar: MatSnackBar,
+    private partnerService: PartnerService
   ) {
     this.formId = this.currentRouter.snapshot.params['formId'];
     this.formGroup = this.fb.group({
-      title: ['' , [Validators.required]],
+      title: ['', [Validators.required]],
       partner: ['', [Validators.required]],
     });
   }
 
-  ngOnInit(): void {
-    if (this.formId){
-      this.isEditMode = true;
-      this.formElements = this.formElements.map(element => ({
-        ...element,
-        isSelected: element.id === this.formId
-      }));
-    };
+  async ngOnInit() {
+    await this.getPartners();
 
-    this.components_total = this.formElements.length;
+    if (this.formId) {
+      (await this.formService.getFormById(this.formId)).subscribe((form: FormConstructor) => {
+        this.isEditMode = true;
+
+        this.formElements = form.components || [];
+
+        this.formGroup.patchValue({
+          title: form.title,
+          partner: form.partner,
+        });
+
+        this.components_total = form.components_total || 0;
+      });
+    };
   }
 
-  onDrop(event: CdkDragDrop<FormElement[]>): void {
+  private async getPartners(): Promise<void> {
+    (await this.partnerService.getPartners()).subscribe((partners: Partner[]) => {
+      this.partners = partners;
+    });
+  }
+
+  public async onSave(): Promise<void> {
+    if (this.formGroup.valid) {
+      const formData: FormConstructor = {
+        title: this.formGroup.get('title')?.value,
+        partner: this.formGroup.get('partner')?.value,
+        components: this.formElements,
+        components_total: this.formElements.length
+      } as FormConstructor;
+
+      let form = await this.formService.createForm(formData);
+
+      if (this.isEditMode) {
+        form = await this.formService.updateForm(this.formId, formData);
+      }
+
+      form.subscribe(({
+        next: () => {
+          this.router.navigate(['/dashboard/forms-constructor']).then(() => {
+            this.snackBar.open('Форма создана', 'Закрыть', {
+              duration: 3000,
+              verticalPosition: 'top',
+            });
+          });
+        },
+        error: (error: any) => {
+          console.error(error);
+          this.snackBar.open('Ошибка при создании формы', 'Закрыть', {
+            duration: 3000,
+            verticalPosition: 'top',
+          });
+        }
+      }));
+    }
+  }
+
+  public onDrop(event: CdkDragDrop<FormElement[]>): void {
     console.log('Event', event);
     if (event.previousContainer === event.container) {
       moveItemInArray(
@@ -335,14 +226,14 @@ export class CreateFormComponent implements OnInit {
     }
   }
 
-  getDefaultOptions(type: string): FormElementOption[] | undefined {
+  private getDefaultOptions(type: string): FormElementOption[] | undefined {
     if (type === 'radio' || type === 'checkbox' || type === 'dropdown') {
       return [];
     }
     return undefined;
   }
 
-  addOption(element: FormElement): void {
+  public addOption(element: FormElement): void {
     if (!element.newOptionValue?.trim()) return;
 
     if (!element.options) {
@@ -357,13 +248,13 @@ export class CreateFormComponent implements OnInit {
     element.newOptionValue = '';
   }
 
-  removeOption(element: FormElement, optionId: string): void {
+  public removeOption(element: FormElement, optionId: string): void {
     if (element.options) {
       element.options = element.options.filter(opt => opt.id !== optionId);
     }
   }
 
-  selectElement(elementId: string): void {
+  public selectElement(elementId: string): void {
     this.formElements = this.formElements.map(element => ({
       ...element,
       isSelected: element.id === elementId
@@ -371,7 +262,7 @@ export class CreateFormComponent implements OnInit {
     this.selectedElementId = elementId;
   }
 
-  onPreview(): void {
+  public onPreview(): void {
     this.dialog.open(PreviewFormModalComponent, {
       width: '600px',
       data: {
@@ -381,31 +272,18 @@ export class CreateFormComponent implements OnInit {
     });
   }
 
-  onSave(): void {
-    if (this.formGroup.valid) {
-      const formData: FormConstructor = {
-        id: faker.string.uuid(),
-        title: this.formGroup.get('title')?.value,
-        partner: this.formGroup.get('partner')?.value,
-        user: {id: faker.string.uuid()},
-        components: this.formElements
-      };
-      console.log('Save form:', formData);
-    }
-  }
-
-  onCancel(): void {
+  public onCancel(): void {
     this.formElements = [];
     this.formGroup.reset();
 
     this.router.navigate(['/dashboard/forms-constructor']);
   }
 
-  removeElement(index: number): void {
+  public removeElement(index: number): void {
     this.formElements.splice(index, 1);
   }
 
-  onFileSelected(event: Event, element: FormElement): void {
+  public onFileSelected(event: Event, element: FormElement): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
@@ -424,7 +302,7 @@ export class CreateFormComponent implements OnInit {
     }
   }
 
-  triggerFileInput(element: FormElement): void {
+  public triggerFileInput(element: FormElement): void {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = element.type === 'image' ? 'image/*' : 'video/*';
@@ -436,7 +314,7 @@ export class CreateFormComponent implements OnInit {
     document.body.removeChild(input);
   }
 
-  setDefaultOption(element: FormElement, optionId: string): void {
+  public setDefaultOption(element: FormElement, optionId: string): void {
     if (element.defaultValue === optionId) {
       element.defaultValue = undefined;
     } else {

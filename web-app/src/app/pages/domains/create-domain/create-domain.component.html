@@ -16,10 +16,8 @@
       <div class="form-unit">
         <div class="input-label">Компания</div>
         <mat-form-field>
-          <mat-select formControlName="partner" [(ngModel)]="selectedDomain">
-            <mat-option [value]="'house'">House</mat-option>
-            <mat-option [value]="'mashina'">Mashina</mat-option>
-            <mat-option [value]="'lalafo'">Lalafo</mat-option>
+          <mat-select formControlName="partner">
+            <mat-option *ngFor="let partner of partners" [value]="partner.id">{{ partner.name }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>

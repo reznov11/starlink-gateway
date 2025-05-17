@@ -68,6 +68,18 @@ class EditUserSerializer(serializers.ModelSerializer):
             'is_staff',
         ]
 
+    def validate(self, attrs):
+        request = self.context['request']
+        instance = self.instance
+
+        if 'role' in attrs and attrs['role'] != instance.role:
+            if not request.user.is_superuser:
+                raise serializers.ValidationError({
+                    'role': 'У вас нет прав на изменение роли пользователя'
+                })
+
+        return attrs
+
     def create(self, validated_data: dict[str, Any]):
         password: str | None = validated_data.pop('password', None)
         instance: User = self.Meta.model(**validated_data)
@@ -92,7 +104,8 @@ class EditUserSerializer(serializers.ModelSerializer):
             password_reset = True
             instance.set_password(password)
 
-        instance.is_superuser = instance.role == 'super_admin'
+        if 'role' in validated_data:
+            instance.is_superuser = instance.role == 'super_admin'
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

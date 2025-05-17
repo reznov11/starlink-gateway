@@ -5,9 +5,9 @@ import {HeaderActionService} from '@services/header-action.service';
 import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {generateDomains} from '@pages/domains/data';
 import {Domain} from '@pages/forms-constructor/interfaces';
 import {CreateDomainComponent} from '@pages/domains/create-domain/create-domain.component';
+import {DomainService} from '@app/services/api/domain';
 
 @Component({
   selector: 'app-domains-constructor',
@@ -42,29 +42,43 @@ export class DomainsComponent {
   constructor(
     private headerService: HeaderActionService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private domainService: DomainService
   ) {
-    this.getDomains();
     this.headerService.setComponent(
       CreateDomainComponent,
       'Новый домен',
-      () => this.getDomains()
+      async () => await this.getDomains()
     );
   }
 
-  onPageChange(event: PageEvent) {
-    this.currentPage = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.getDomains();
+  async ngOnInit() {
+    await this.getDomains();
   }
 
-  private getDomains() {
-    this.domains = Array.from({ length: 100 }, () => generateDomains());
-    // TODO: get list of domains from the server
+  async onPageChange(event: PageEvent) {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    await this.getDomains();
+  }
 
-    const startIndex = this.currentPage * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.displayedDomains = this.domains.slice(startIndex, endIndex);
+  private async getDomains() {
+    (await this.domainService.getDomainsList()).subscribe({
+      next: (domains: Domain[]) => {
+        console.log('Domains', domains);
+        this.domains = domains;
+
+        const startIndex = this.currentPage * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        this.displayedDomains = this.domains.slice(startIndex, endIndex);
+      },
+      error: (err: any) => {
+        this.snackBar.open('Ошибка при получении доменов', 'Закрыть', {
+          duration: 3000,
+          verticalPosition: 'top',
+        });
+      }
+    });
   }
 
   get totalPages(): number {
@@ -122,13 +136,21 @@ export class DomainsComponent {
 
     dialogRef.afterClosed().subscribe(async (result: boolean) => {
       if (result) {
-        console.log('Delete domain', result);
-        this.getDomains();
-        this.snackBar.open('Домен удален', 'Закрыть', {
-          duration: 3000,
-          verticalPosition: 'top',
+        (await this.domainService.deleteDomain(domain.id)).subscribe({
+          next: () => {
+            this.getDomains();
+            this.snackBar.open('Домен удален', 'Закрыть', {
+              duration: 3000,
+              verticalPosition: 'top',
+            });
+          },
+          error: (err: any) => {
+            this.snackBar.open('Ошибка при удалении домена', 'Закрыть', {
+              duration: 3000,
+              verticalPosition: 'top',
+            });
+          }
         });
-        // TODO: send request to delete partner
       }
     });
   }

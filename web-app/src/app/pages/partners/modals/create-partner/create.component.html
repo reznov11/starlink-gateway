@@ -16,7 +16,9 @@
       <div class="form-unit">
         <div class="input-label">URL компании</div>
         <mat-form-field>
-          <input type="text" formControlName="domain" matInput placeholder="https://">
+          <mat-select formControlName="domain">
+            <mat-option *ngFor="let domain of domains" [value]="domain.id">{{ domain.url }}</mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
       <div class="form-unit">

@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'apps.proposal',
     'apps.domains',
     'apps.partners',
+    'apps.constructor',
 ]
 
 MIDDLEWARE = [

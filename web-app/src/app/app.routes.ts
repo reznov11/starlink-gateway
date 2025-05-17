@@ -37,19 +37,19 @@ export const routes: Routes = [
         {
           path: 'partners',
           loadChildren: () => import('@pages/partners/partners.routes').then((m) => m.routes),
-          data: { title: 'Компании', roles: ['super_admin', 'employee'] },
           canActivate: [AuthorizedUserGuard, RoleGuard],
+          data: { roles: ['super_admin'], title: 'Компании' },
         },
         {
           path: 'users',
           loadChildren: () => import('@pages/users/users.routes').then((m) => m.routes),
-          canActivate: [AuthorizedUserGuard],
+          canActivate: [AuthorizedUserGuard, RoleGuard],
           data: { roles: ['super_admin'] }
         },
         {
           path: 'domains',
           loadChildren: () => import('@pages/domains/domains.routes').then((m) => m.routes),
-          canActivate: [AuthorizedUserGuard],
+          canActivate: [AuthorizedUserGuard, RoleGuard],
           data: { roles: ['super_admin'] }
         },
         {

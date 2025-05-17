@@ -7,8 +7,8 @@ from django.http import HttpRequest
 from apps.accounts.models.user import User
 from rest_framework.response import Response
 from apps.authorize.mixins import BaseAuthorizeView
+from apps.authorize.permissions import IsSuperAdmin
 from rest_framework.parsers import MultiPartParser, FormParser
-from apps.authorize.permissions import IsSuperAdmin, IsEmployee
 from apps.accounts.serializers import UserSerializer, EditUserSerializer
 
 
@@ -68,6 +68,8 @@ class UserUpdateView(BaseAuthorizeView):
 
 
 class UserProfileView(BaseAuthorizeView):
+    permission_classes = BaseAuthorizeView.permission_classes
+
     def post(self, request: HttpRequest, format: Union[str, None] = None) -> Response:
         user: User = request.user
         user_data: UserSerializer = UserSerializer(user, context={'request': request})
@@ -93,6 +95,8 @@ class DeleteUserView(BaseAuthorizeView, generics.DestroyAPIView):
 
 
 class UserRolesView(BaseAuthorizeView):
+    permission_classes = BaseAuthorizeView.permission_classes + (IsSuperAdmin,)
+
     def post(self, request: HttpRequest, format: Union[str, None] = None) -> Response:
         user: User = request.user
         user_roles: dict[str, str | list[str]] = {

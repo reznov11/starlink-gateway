@@ -44,11 +44,7 @@ export class PreviewFormModalComponent {
   }
 
   createForm(): void {
-    this.dialogRef.close();
-    this.snackBar.open('Форма успешно создана', '', {
-      duration: 3000,
-      panelClass: 'success-snackbar',
-    });
+    this.dialogRef.close(this.data);
   }
 
   getOptionLabel(element: any): string {
