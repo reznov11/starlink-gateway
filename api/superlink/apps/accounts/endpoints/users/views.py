@@ -39,7 +39,7 @@ class UsersListCreateView(BaseAuthorizeView):
         if not data.get('username'):
             data['username'] = f'user_{uuid.uuid4().hex[:8]}'
 
-        serializer: EditUserSerializer = EditUserSerializer(data=data)
+        serializer: EditUserSerializer = EditUserSerializer(data=data, context={'request': request})
 
         if serializer.is_valid():
             serializer.save()

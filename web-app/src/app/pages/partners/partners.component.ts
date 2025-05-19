@@ -1,47 +1,13 @@
 import {Component} from '@angular/core';
 import {DynamicTableComponent, TableColumn} from '@components/dynamic-table/dynamic-table.component';
 import {PageEvent} from '@angular/material/paginator';
-import {Domain, DomainStatus, Partner} from '@pages/forms-constructor/interfaces';
-import { faker } from '@faker-js/faker';
 import {HeaderActionService} from '@services/header-action.service';
 import {CreatePartnerComponent} from '@pages/partners/modals/create-partner/create.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '@app/components/confirmation-dialog/confirmation-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PartnerService } from '@services/api/partner';
-
-function generateDomain(partner: Partner): Domain {
-  return {
-    id: faker.string.uuid(),
-    partner: partner,
-    code: faker.string.alphanumeric(10),
-    url: faker.internet.url(),
-    status: faker.helpers.arrayElement(['ACTIVE', 'NOT_ACTIVE']) as DomainStatus,
-  };
-}
-
-function generatePartner(): Partner {
-  const partner: Partner = {
-    id: faker.string.uuid(),
-    name: faker.company.name(),
-    login: faker.internet.userName(),
-    phone_number: faker.phone.number(),
-    email: faker.internet.email(),
-    domain: {} as Domain,
-    logo: faker.image.avatar(),
-    person_contact: faker.name.fullName(),
-    category: faker.commerce.department(),
-    inn: faker.string.numeric(14),
-    is_active: faker.datatype.boolean(),
-    created_at: faker.date.future()
-  };
-
-  partner.domain = generateDomain(partner);
-
-  return partner;
-}
-
-const PARTNERS: Partner[] = Array.from({ length: 100 }, () => generatePartner());
+import {Partner} from '@pages/forms-constructor/interfaces';
 
 @Component({
   selector: 'app-partners',
@@ -63,9 +29,10 @@ export class PartnersComponent {
     { key: 'created_at', header: 'Дата создания', type: 'date' },
     { key: 'category', header: 'category' },
     { key: 'person_contact', header: 'Контактное лицо' },
+    { key: 'is_active', header: 'Активен', type: 'boolean'}
   ];
 
-  public partners: Partner[] = PARTNERS;
+  public partners: Partner[] = [];
   public displayedPartners: Partner[] = [];
 
   public pageSize= 10;
@@ -80,7 +47,7 @@ export class PartnersComponent {
     private partnerService: PartnerService
   ) {
     this.headerService.setComponent(
-      CreatePartnerComponent, 
+      CreatePartnerComponent,
       'Добавить компанию',
       async () => {
         await this.getPartnersList();
@@ -133,7 +100,7 @@ export class PartnersComponent {
 
   public editForm(partner: Partner) {
     const dialogRef = this.dialog.open(
-      CreatePartnerComponent, 
+      CreatePartnerComponent,
       {
         ...this.dialogSettings,
         data: {
@@ -160,7 +127,7 @@ export class PartnersComponent {
 
   public deleteForm(partner: Partner) {
     const dialogRef = this.dialog.open(
-      ConfirmationDialogComponent, 
+      ConfirmationDialogComponent,
       {
         ...this.dialogSettings,
         data: {

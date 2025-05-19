@@ -41,6 +41,7 @@ class PartnerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Partner
         fields = [
+            'is_active',
             'name',
             'domain',
             'inn',
@@ -63,7 +64,7 @@ class PartnerUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Partner
-        fields = ['name', 'domain', 'inn', 'category', 'person_contact']
+        fields = ['is_active', 'name', 'domain', 'inn', 'category', 'person_contact']
 
     def validate_status(self, value):
         if value not in dict(Partner.Status.choices):

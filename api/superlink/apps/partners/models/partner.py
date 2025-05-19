@@ -1,7 +1,6 @@
 from django.db import models
-import uuid
-from django.utils.translation import gettext_lazy as _
 from core.models import BaseModel
+from django.utils.translation import gettext_lazy as _
 
 
 class Partner(BaseModel):

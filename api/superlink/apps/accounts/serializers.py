@@ -72,7 +72,8 @@ class EditUserSerializer(serializers.ModelSerializer):
         request = self.context['request']
         instance = self.instance
 
-        if 'role' in attrs and attrs['role'] != instance.role:
+        if instance and 'role' in attrs and \
+                attrs['role'] != instance.role:
             if not request.user.is_superuser:
                 raise serializers.ValidationError({
                     'role': 'У вас нет прав на изменение роли пользователя'

@@ -44,6 +44,9 @@
           <input type="text" formControlName="person_contact" matInput placeholder="Напишите ФИО">
         </mat-form-field>
       </div>
+      <div class="form-unit" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+        <p><mat-checkbox formControlName="is_active">Активен</mat-checkbox></p>
+      </div>
       <mat-dialog-actions>
         <button mat-flat-button class="cancel-btn" mat-dialog-close>Отменить</button>
         <button mat-flat-button class="confirm-btn" [disabled]="form.invalid">

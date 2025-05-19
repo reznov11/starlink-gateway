@@ -2,10 +2,10 @@
   <div class="table_filter">
     <div class="form-unit">
       <mat-form-field>
-      <span matTextPrefix>
-        <mat-icon [svgIcon]="'custom_search'"
-                  [ngStyle]="{ 'color': '#999999', 'vertical-align': 'middle' }"></mat-icon>
-      </span>
+        <span matTextPrefix>
+          <mat-icon [svgIcon]="'custom_search'"
+                    [ngStyle]="{ 'color': '#999999', 'vertical-align': 'middle' }"></mat-icon>
+        </span>
         <input matInput [formControl]="searchControl" placeholder="Поиск"/>
       </mat-form-field>
     </div>
@@ -36,7 +36,7 @@
                   {{ element[column.key].first_name![0] || '' }}{{ element[column.key].last_name![0] || '' }}
                 </div>
               }
-              <div>{{element[column.key].fullname}}</div>
+              <div>{{element[column.key].fullname || element[column.key].username}}</div>
             </div>
           </div>
 
@@ -44,7 +44,7 @@
             @if(element[column.key]) {
               <u>{{element[column.key].name || element[column.key]}}</u>
             } @else {
-              <u>-</u>
+              -
             }
           </span>
 
@@ -60,7 +60,7 @@
           </div>
 
           <span *ngSwitchDefault>
-            {{column.format ? column.format(element[column.key]) : element[column.key]}}
+            {{column.format ? column.format(element[column.key]) || '-' : element[column.key] || '-'}}
           </span>
         </ng-container>
       </td>

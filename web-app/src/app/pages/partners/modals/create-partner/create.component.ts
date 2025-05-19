@@ -47,9 +47,14 @@ export class CreatePartnerComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { partner: Partner } | null
   ) {
     this.form = this.fb.group({
-      name:  [this.data?.partner.name || '', Validators.required],
+      is_active: [this.data?.partner.is_active, [Validators.required]],
+      name:  [this.data?.partner.name || '', [Validators.required]],
       domain:  [this.data?.partner.domain! || '', [Validators.required]],
-      inn: [this.data?.partner.inn || '', [Validators.required, Validators.maxLength(14), Validators.minLength(14)]],
+      inn: [this.data?.partner.inn || '', [
+        Validators.required,
+        Validators.maxLength(14),
+        Validators.minLength(14)]
+      ],
       category: [this.data?.partner.category || '1', [Validators.required]],
       person_contact: [this.data?.partner.person_contact || '', [Validators.required]],
     });
