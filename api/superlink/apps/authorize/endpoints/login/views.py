@@ -1,5 +1,6 @@
 from typing import Union
 from knox.models import AuthToken
+from django.shortcuts import render
 from rest_framework.views import APIView
 from django.http.request import QueryDict
 from knox.auth import TokenAuthentication
@@ -10,56 +11,41 @@ from knox.views import LoginView as KnoxLoginView
 from django.http import HttpRequest, JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.signals import user_logged_out
-from django.shortcuts import get_object_or_404, render
 from apps.authorize.endpoints.login.serializers import CustomLoginSerializer
+from core.exceptions import CustomNotFound, CustomBadRequest, CustomNotAuthorized
 
 from apps.domains.models import Domain
+from apps.partners.models import Partner
 from apps.constructor.models import Constructor
 from apps.domains.models.domain import DomainStatus
-
-from core.exceptions import CustomNotFound, CustomFatalException
-
+from apps.constructor.serializers import ConstructorSerializer
 
 # Create your views here.
 
 
 class IndexView(APIView):
-    def get(self, request, *args, **kwargs):
-        try:
-            params: QueryDict = self.request.GET
-            domain_code_param: str | None = params.get('ifr_code', None)
-            domain: Domain = self._get_check_domain(domain_code=domain_code_param)
-            is_secured_content: bool = self._dont_show_content(domain=domain)
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        params = self.request.GET
+        domain_code_param = params.get('ifr_code', None)
 
-            if is_secured_content:
-                return JsonResponse({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+        domain = self._get_check_domain(domain_code=domain_code_param)
+        dont_show = self._dont_show_content(domain=domain)
 
-            return render(
-                template_name='index.html',
-                request=self.request,
-                context={'partner_form': self._get_partner_form(domain=domain)},
-                status=status.HTTP_202_ACCEPTED
-            )
-        except Exception as exc:
-            print("Error: ", str(exc))
-            error_test: str = 'Внутреняя ошибка'
-            raise CustomFatalException(error_test)
+        if dont_show:
+            raise CustomNotAuthorized('Несанкционированный доступ')
 
-    @staticmethod
-    def _get_check_domain(domain_code: str) -> Domain:
-        domain: Domain = Domain.objects.filter(code=domain_code).first()
+        partner_form = self._get_partner_form(domain=domain)
 
-        if not domain:
-            raise CustomNotFound('Домен не найден')
+        if not partner_form:
+            raise CustomBadRequest('Нет формы.')
 
-        return domain
+        if not self._form_has_components(form=partner_form):
+            raise CustomBadRequest('Нет компонентов.')
 
-    def _dont_show_content(self, domain: Domain) -> bool:
-        return domain and any([
-            domain.status == DomainStatus.NOT_ACTIVE,
-            domain.partner and not domain.partner.is_active,
-            domain.url != self._get_request_host()
-        ])
+        return JsonResponse(
+            ConstructorSerializer(partner_form).data, 
+            status=status.HTTP_202_ACCEPTED
+        )
 
     def _get_request_host(self) -> str:
         current_host: str = self.request.get_host()
@@ -67,11 +53,38 @@ class IndexView(APIView):
         return current_origin
 
     @staticmethod
+    def _get_check_domain(domain_code: str) -> Domain:
+        domain: Domain | None = Domain.objects.filter(code=domain_code).first()
+
+        if not domain:
+            raise CustomNotFound('Домен не найден')
+
+        return domain
+
+    @staticmethod
     def _get_partner_form(domain: Domain) -> Constructor | None:
         if domain.partner:
             return Constructor.objects.filter(partner=domain.partner).first()
 
         return None
+
+    def _form_has_components(self, form: Constructor) -> bool:
+        if len(form.components) > 0:
+            return True
+
+        return False
+
+    def _dont_show_content(self, domain: Domain) -> bool:
+        if not domain.partner:
+            return True
+
+        partner: Partner = domain.partner
+
+        return any([
+            partner.domain.status == DomainStatus.NOT_ACTIVE,
+            not partner or not partner.is_active,
+            partner.domain.url != self._get_request_host()
+        ])
 
 
 class LoginView(APIView):

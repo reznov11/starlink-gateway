@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {Partner} from '@pages/forms-constructor/interfaces';
+import {FormConstructor, Partner} from '@pages/forms-constructor/interfaces';
 import { UUIDTypes } from 'uuid';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -30,5 +31,16 @@ export class PartnerService {
 
   public async deletePartner(partnerId: UUIDTypes): Promise<Observable<void>> {
     return this.http.delete<void>(`${this.apiUrl}/${partnerId}/delete/`);
+  }
+
+  public async getPartnerByDomainCode(domainCode: string): Promise<Observable<HttpResponse<FormConstructor>>> {
+    return this.http.get<FormConstructor>(`${this.apiUrl}/portal/?ifr_code=${domainCode}`,{
+      observe: 'response'
+    }).pipe(
+      tap((response: HttpResponse<FormConstructor>) => {
+        console.log('Status Code:', response.status);
+        console.log('Data:', response.body);
+      })
+    );
   }
 }

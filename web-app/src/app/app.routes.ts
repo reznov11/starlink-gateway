@@ -6,12 +6,18 @@ import { AuthorizedUserGuard } from '@guards/authorized.guard';
 import {AccessDeniedComponent} from '@pages/access-denied/access-denied.component';
 import {LogoutComponent} from '@pages/logout/logout.component';
 import {RoleGuard} from '@guards/role.guard';
+import { PortalComponent } from '@pages/portal/portal.component';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
     data: { title: 'Авторизция'}
+  },
+  {
+    path: 'partner',
+    component: PortalComponent,
+    data: { title: 'Партнёрский портал'}
   },
   DashboardShell.childRoutes([
     {

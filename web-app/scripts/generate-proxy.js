@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const proxyConfig = {
-  "/cbakai/api/v1": {
+  "/api": {
     target: process.env.API_PROXY_TARGET || "http://127.0.0.1:8000",
     secure: false,
     changeOrigin: true,
@@ -13,4 +13,4 @@ const proxyConfig = {
 };
 
 fs.writeJsonSync('proxy.conf.json', proxyConfig, { spaces: 2 });
-console.log("✅ proxy.conf.json generated with target:", proxyConfig["/cbakai/api/v1"].target);
+console.log("✅ proxy.conf.json generated with target:", proxyConfig["/api"].target);
