@@ -50,7 +50,7 @@ export class CreateDomainComponent implements OnInit {
 
     this.form = this.fb.group({
       partner: [this.data?.domain?.partner?.id || ''],
-      url: [this.data?.domain?.url || '', [Validators.required, Validators.pattern(urlRegex)]],
+      url: [this.data?.domain?.url || '', [Validators.required]],  // , Validators.pattern(urlRegex)
       status: [this.data?.domain?.status || DomainStatus.ACTIVE, [Validators.required]],
     });
   }

@@ -1,15 +1,16 @@
 import string
 import random
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from core.models import BaseModel
+from django.utils.translation import gettext_lazy as _
+
+
+class DomainStatus(models.TextChoices):
+    ACTIVE = 'ACTIVE', 'Активный'
+    NOT_ACTIVE = 'NOT_ACTIVE', 'Неактивный'
 
 
 class Domain(BaseModel):
-    class Status(models.TextChoices):
-        ACTIVE = 'ACTIVE', 'Активный'
-        NOT_ACTIVE = 'NOT_ACTIVE', 'Неактивный'
-
     partner = models.ForeignKey(
         'partners.Partner',
         on_delete=models.SET_NULL,
@@ -27,8 +28,8 @@ class Domain(BaseModel):
     url = models.URLField(verbose_name=_("URL-адрес"))
     status = models.CharField(
         max_length=20,
-        choices=Status.choices,
-        default=Status.NOT_ACTIVE,
+        choices=DomainStatus.choices,
+        default=DomainStatus.NOT_ACTIVE,
         verbose_name=_("Статус")
     )
 
@@ -42,7 +43,8 @@ class Domain(BaseModel):
             self.code = self._generate_unique_code()
         super().save(*args, **kwargs)
 
-    def _generate_unique_code(self):
+    @staticmethod
+    def _generate_unique_code():
         prefix = "IFRM"
         length = 6
         chars = string.ascii_uppercase + string.digits

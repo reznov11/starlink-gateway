@@ -1,6 +1,6 @@
 from typing import Any
 from rest_framework import serializers
-from .models.domain import Domain
+from .models.domain import Domain, DomainStatus
 from apps.partners.models.partner import Partner
 from django.shortcuts import get_object_or_404
 from apps.partners.serializers import PartnerSerializer
@@ -30,7 +30,7 @@ class DomainCreateSerializer(serializers.ModelSerializer):
         return value
     
     def validate_status(self, value):
-        if value not in dict(Domain.Status.choices):
+        if value not in dict(DomainStatus.choices):
             raise serializers.ValidationError("Неверное значение статуса")
         return value
 
@@ -54,7 +54,7 @@ class DomainUpdateSerializer(serializers.ModelSerializer):
         fields = ['url', 'status', 'partner']
 
     def validate_status(self, value):
-        if value not in dict(Domain.Status.choices):
+        if value not in dict(DomainStatus.choices):
             raise serializers.ValidationError("Неверное значение статуса")
         return value
 
