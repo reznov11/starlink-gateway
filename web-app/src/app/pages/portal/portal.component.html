@@ -1,73 +1,43 @@
-<div class="preview-form-container" *ngIf="portalData">
-    <div class="preview-modal__content">
-        <ng-container *ngIf="portalData.components; else emptyState">
-        <form class="preview-form" autocomplete="off" (ngSubmit)="onSubmit()" [formGroup]="formGroup">
-            <div *ngFor="let element of portalData.components" class="preview-modal__element">
-            <ng-container [ngSwitch]="element.type">
-                <h3 *ngSwitchCase="'heading'" class="preview-form__heading">{{ element.value }}</h3>
-                <div *ngSwitchCase="'info'" class="preview-form__info-block">{{ element.value }}</div>
-                <div *ngSwitchCase="'paragraph'" class="preview-form__paragraph">{{ element.value }}</div>
-
-                <div *ngSwitchCase="'textfield'" class="preview-form__field full-width">
-                    <mat-form-field appearance="outline" class="full-width">
-                        <input matInput type="text" placeholder="Введите текст" [required]="element.required" />
-                    </mat-form-field>
+<div *ngIf="portalData">
+    <ng-container *ngIf="portalData.components; else emptyState">
+        <ng-container *ngIf="portalData!.settings!.type === 'normal'">
+            <form class="preview-form" autocomplete="off" (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+                <app-form-components [formData]="portalData.components"></app-form-components>
+                <div class="preview-form__actions" *ngIf="!settingsPreviewData">
+                    <button mat-flat-button color="primary" type="submit" class="create-btn">
+                        Отправить
+                    </button>
                 </div>
-
-                <div *ngSwitchCase="'phone'" class="preview-form__field full-width">
-                    <mat-form-field appearance="outline" class="full-width">
-                        <input matInput type="tel" placeholder="+996" [required]="element.required" />
-                    </mat-form-field>
-                </div>
-
-                <div *ngSwitchCase="'dropdown'" class="preview-form__field full-width">
-                    <mat-form-field appearance="outline" class="full-width">
-                        <mat-select [(ngModel)]="element.value" [required]="element.required!" [ngModelOptions]="{standalone: true}">
-                            <mat-option *ngFor="let option of element.options" [value]="option.id">
-                                {{ option.value }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-
-                <div *ngSwitchCase="'radio'" class="preview-form__field full-width">
-                    <mat-radio-group [(ngModel)]="element.value" [required]="element.required!" [ngModelOptions]="{standalone: true}">
-                        <mat-radio-button *ngFor="let option of element.options" [value]="option.id" class="preview-form__radio">
-                        {{ option.value }}
-                        </mat-radio-button>
-                    </mat-radio-group>
-                </div>
-
-                <div *ngSwitchCase="'checkbox'" class="preview-form__field full-width">
-                    <mat-checkbox [checked]="element.value"
-                    class="preview-form__checkbox"
-                        *ngFor="let option of element.options" [value]="option.id"
-                    >{{ option.value }}</mat-checkbox>
-                </div>
-
-                <div *ngSwitchCase="'image'" class="preview-form__media">
-                    <img *ngIf="element.value" [src]="element.value" alt="Uploaded image" class="preview-form__image">
-                    <div *ngIf="!element.value" class="preview-form__media-placeholder">
-                        <mat-icon>image</mat-icon>
-                        <span>Изображение не загружено</span>
-                    </div>
-                </div>
-                <div *ngSwitchCase="'video'" class="preview-form__media">
-                    <video *ngIf="element.value" [src]="element.value" controls class="preview-form__video"></video>
-                    <div *ngIf="!element.value" class="preview-form__media-placeholder">
-                        <mat-icon>videocam</mat-icon>
-                        <span>Видео не загружено</span>
-                    </div>
-                </div>
-            </ng-container>
-            </div>
-            <div class="preview-form__actions">
-                <button mat-flat-button color="primary" type="submit" class="create-btn">
-                    Отправить
-                </button>
-            </div>
-        </form>
+            </form>
         </ng-container>
-        <ng-template #emptyState></ng-template>
-    </div>
+
+        <div class="form-settings-container">
+            <ng-container *ngIf="portalData!.settings!.type === 'button'">
+                <button mat-flat-button class="preview-form__button"
+                    [style.background-color]="portalData!.settings!.button!.background"
+                    [style.color]="portalData!.settings!.button!.textColor"
+                    [class.size-sm]="portalData!.settings!.button!.size === 'sm'"
+                    [class.size-md]="portalData!.settings!.button!.size === 'md'"
+                    [class.size-lg]="portalData!.settings!.button!.size === 'lg'"
+                    [class.font-sm]="portalData!.settings!.button!.fontSize === 'sm'"
+                    [class.font-md]="portalData!.settings!.button!.fontSize === 'md'"
+                    [class.font-lg]="portalData!.settings!.button!.fontSize === 'lg'"
+                    [class.has-shadow]="portalData!.settings!.button!.hasShadow"
+                    [class.is-rounded]="portalData!.settings!.button!.isRounded"
+                >
+                    {{ portalData!.settings!.button!.text }}
+                </button>
+            </ng-container>
+
+            <ng-container *ngIf="portalData!.settings!.type === 'logo'">
+                <img [src]="portalData!.settings!.logo!.image"
+                    [class.size-sm]="portalData!.settings!.logo!.size === 'sm'"
+                    [class.size-md]="portalData!.settings!.logo!.size === 'md'"
+                    [class.size-lg]="portalData!.settings!.logo!.size === 'lg'"
+                    [class.circle]="portalData!.settings!.logo!.isCircle"
+                    *ngIf="portalData!.settings!.logo!.image">
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-template #emptyState></ng-template>
 </div>

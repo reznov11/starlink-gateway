@@ -21,6 +21,7 @@ class Constructor(BaseModel):
     )
     components_total = models.IntegerField(default=0, verbose_name=_("Количество компонентов"))
     components = models.JSONField(default=list, verbose_name=_("Компоненты"))
+    settings = models.JSONField(default=dict, verbose_name=_("Настройки"))
 
     class Meta:
         verbose_name = _("Конструктор")

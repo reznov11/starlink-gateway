@@ -8,82 +8,14 @@
   <div class="preview-modal__content">
     <ng-container *ngIf="data.formElements && data.formElements.length; else emptyState">
       <form class="preview-form" autocomplete="off">
-        <div *ngFor="let element of data.formElements" class="preview-modal__element">
-          <ng-container [ngSwitch]="element.type">
-            <h3 *ngSwitchCase="'heading'" class="preview-form__heading">{{ element.value }}</h3>
-            <div *ngSwitchCase="'info'" class="preview-form__info-block">{{ element.value }}</div>
-            <div *ngSwitchCase="'paragraph'" class="preview-form__paragraph">{{ element.value }}</div>
-
-            <div *ngSwitchCase="'textfield'" class="preview-form__field full-width">
-              <!--<label class="preview-form__label">{{ element.label }}</label>-->
-              <mat-form-field appearance="outline" class="full-width">
-                <input matInput type="text" placeholder="Введите текст" [required]="element.required" />
-              </mat-form-field>
-            </div>
-
-            <div *ngSwitchCase="'phone'" class="preview-form__field full-width">
-              <!--<label class="preview-form__label">{{ element.label }}</label>-->
-              <mat-form-field appearance="outline" class="full-width">
-                <input matInput type="tel" placeholder="+996" [required]="element.required" />
-              </mat-form-field>
-            </div>
-
-            <div *ngSwitchCase="'dropdown'" class="preview-form__field full-width">
-              <!--<label class="preview-form__label">{{ element.label }}</label>-->
-              <!--<div class="preview-form__value">
-                {{ getOptionLabel(element) }}
-              </div>-->
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-select [(ngModel)]="element.value" [required]="element.required" [ngModelOptions]="{standalone: true}">
-                  <mat-option *ngFor="let option of element.options" [value]="option.id">
-                    {{ option.value }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-
-            <div *ngSwitchCase="'radio'" class="preview-form__field full-width">
-              <!--<label class="preview-form__label">{{ element.label }}</label>-->
-              <!--<div class="preview-form__value">
-                {{ getOptionLabel(element) }}
-              </div>-->
-              <mat-radio-group [(ngModel)]="element.value" [required]="element.required" [ngModelOptions]="{standalone: true}">
-                <mat-radio-button *ngFor="let option of element.options" [value]="option.id" class="preview-form__radio">
-                  {{ option.value }}
-                </mat-radio-button>
-              </mat-radio-group>
-            </div>
-
-            <div *ngSwitchCase="'checkbox'" class="preview-form__field full-width">
-              <!--<label class="preview-form__label">{{ element.label }}</label>-->
-              <!--<div class="preview-form__value">
-                {{ getOptionLabel(element) }}
-              </div>-->
-              <mat-checkbox [checked]="element.value"
-              class="preview-form__checkbox"
-               *ngFor="let option of element.options" [value]="option.id"
-              >{{ option.value }}</mat-checkbox>
-            </div>
-
-            <div *ngSwitchCase="'image'" class="preview-form__media">
-              <img *ngIf="element.value" [src]="element.value" alt="Uploaded image" class="preview-form__image">
-              <div *ngIf="!element.value" class="preview-form__media-placeholder">
-                <mat-icon>image</mat-icon>
-                <span>Изображение не загружено</span>
-              </div>
-            </div>
-            <div *ngSwitchCase="'video'" class="preview-form__media">
-              <video *ngIf="element.value" [src]="element.value" controls class="preview-form__video"></video>
-              <div *ngIf="!element.value" class="preview-form__media-placeholder">
-                <mat-icon>videocam</mat-icon>
-                <span>Видео не загружено</span>
-              </div>
-            </div>
-          </ng-container>
-        </div>
+        <app-form-components [formData]="data.formElements"></app-form-components>
         <div class="preview-form__actions">
-          <button mat-stroked-button color="primary" type="button" class="edit-btn" (click)="close()">Редактировать</button>
-          <button mat-flat-button color="primary" type="button" class="create-btn" (click)="createForm()">Создать</button>
+          <button mat-stroked-button color="primary" type="button" class="edit-btn" (click)="close()">
+            Редактировать
+          </button>
+          <button mat-flat-button color="primary" type="button" class="create-btn" (click)="createForm()">
+            Создать
+          </button>
         </div>
       </form>
     </ng-container>

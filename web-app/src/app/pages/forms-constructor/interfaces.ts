@@ -35,6 +35,24 @@ export interface Partner {
   created_at?: Date
 }
 
+export interface FormSettings {
+  type: 'button' | 'logo' | 'normal';
+  button?: {
+    background: string;
+    text: string;
+    size: 'sm' | 'md' | 'lg';
+    textColor: string;
+    fontSize: 'sm' | 'md' | 'lg';
+    hasShadow: boolean;
+    isRounded: boolean;
+  };
+  logo?: {
+    image: string;
+    size: 'sm' | 'md' | 'lg';
+    isCircle: boolean;
+  };
+}
+
 export interface FormConstructor {
   id: UUIDTypes;
   title: string;
@@ -42,5 +60,6 @@ export interface FormConstructor {
   user: UserProfile;
   created_at?: Date;
   components_total?: number;
-  components?: FormElement[]
+  components?: FormElement[];
+  settings?: FormSettings;
 }

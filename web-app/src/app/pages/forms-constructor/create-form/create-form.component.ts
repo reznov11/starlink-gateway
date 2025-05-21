@@ -15,10 +15,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PreviewFormModalComponent } from './preview-form-modal/preview-form-modal.component';
 import { FormElement, FormElementOption } from '@pages/forms-constructor/create-form/models';
-import { FormConstructor, Partner } from '@pages/forms-constructor/interfaces';
+import { FormConstructor, FormSettings, Partner } from '@pages/forms-constructor/interfaces';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormService } from '@app/services/api/form';
 import { PartnerService } from '@app/services/api/partner';
+import { FormSettingsModalComponent } from './form-settings-modal/form-settings-modal.component';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-form',
@@ -43,11 +45,24 @@ import { PartnerService } from '@app/services/api/partner';
 export class CreateFormComponent implements OnInit {
   private formId: string;
   public formGroup: FormGroup;
+  public isLoading: boolean = false;
   public selectedElementId: string | null = null;
 
   public isEditMode: boolean = false;
   public components_total: number = 0;
   public partners: Partner[] = [];
+  public formSettings: FormSettings = {
+    type: 'button',
+    button: {
+      background: '#4B82EC',
+      text: 'Бакай банк',
+      size: 'sm',
+      textColor: '#FFFFFF',
+      fontSize: 'sm',
+      hasShadow: false,
+      isRounded: false
+    }
+  } as FormSettings;
 
   public formElements: FormElement[] = [];
   public readonly availableElements: FormElement[] = [
@@ -143,19 +158,27 @@ export class CreateFormComponent implements OnInit {
     await this.getPartners();
 
     if (this.formId) {
-      (await this.formService.getFormById(this.formId)).subscribe((form: FormConstructor) => {
+      await this.getForm();
+    };
+  }
+
+  private async getForm(): Promise<void> {
+    this.isLoading = true;
+    (await this.formService.getFormById(this.formId))
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe((form: FormConstructor) => {
         this.isEditMode = true;
 
-        this.formElements = form.components || [];
+      this.formElements = form.components || [];
 
-        this.formGroup.patchValue({
-          title: form.title,
-          partner: form.partner,
-        });
-
-        this.components_total = form.components_total || 0;
+      this.formGroup.patchValue({
+        title: form.title,
+        partner: form.partner,
       });
-    };
+
+      this.formSettings = form.settings || this.formSettings;
+      this.components_total = form.components_total || 0;
+    })
   }
 
   private async getPartners(): Promise<void> {
@@ -170,7 +193,8 @@ export class CreateFormComponent implements OnInit {
         title: this.formGroup.get('title')?.value,
         partner: this.formGroup.get('partner')?.value,
         components: this.formElements,
-        components_total: this.formElements.length
+        components_total: this.formElements.length,
+        settings: this.formSettings
       } as FormConstructor;
 
       let form = await this.formService.createForm(formData);
@@ -321,5 +345,21 @@ export class CreateFormComponent implements OnInit {
       element.defaultValue = optionId;
       element.value = optionId;
     }
+  }
+
+  public openFormSettings(): void {
+    const dialogRef = this.dialog.open(FormSettingsModalComponent, {
+      maxWidth: '1200px',
+      data: {
+        settings: this.formSettings,
+        formElements: this.formElements
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.formSettings = result;
+      }
+    });
   }
 }

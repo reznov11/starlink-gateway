@@ -109,6 +109,10 @@ button.mat-icon-button[disabled] {
   opacity: 0.5; // Optional: Reduce opacity for disabled state
 }
 
+button[disabled] {
+  opacity: 0.5;
+}
+
 .cdk-drag-preview {
   opacity: 0.5;
 }
@@ -227,7 +231,8 @@ mat-sidenav {
   }
 }
 
-form {
+form,
+.form-components {
   mat-form-field {
     width: 100%;
     background: transparent !important;
@@ -441,7 +446,7 @@ mat-form-field {
   max-width: 890px;
   background: #fff;
   border-radius: 1rem !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
   height: calc(100vh - 200px);
@@ -618,3 +623,136 @@ mat-form-field {
 }
 
 // Form preview end
+
+// Form settings modal
+.form-settings-modal {
+  padding: 1rem;
+
+  h2 {
+    margin: 0 0 24px;
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .settings-container {
+    display: flex;
+    min-width: 800px;
+    gap: 1rem;
+  }
+
+  .settings-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .type-selector {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    .logo-upload {
+      margin-bottom: 16px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+    }
+  }
+
+  .preview-container {
+    flex: 1;
+    padding: 24px;
+    background: #f5f5f5;
+    border-radius: 8px;
+
+    h3 {
+      text-align: center;
+      margin: 0 0 16px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .preview-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+  }
+}
+
+// Form settings modal end
+
+// Portal settings
+.form-settings-container {
+  button {
+    border-radius: 1px;
+    // width: 100%;
+
+    &.size-sm {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+
+    &.size-md {
+      padding: 12px 24px;
+      font-size: 16px;
+    }
+
+    &.size-lg {
+      padding: 16px 32px;
+      font-size: 18px;
+    }
+
+    &.font-sm {
+      font-size: 12px;
+    }
+
+    &.font-md {
+      font-size: 14px;
+    }
+
+    &.font-lg {
+      font-size: 16px;
+    }
+
+    &.has-shadow {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    &.is-rounded {
+      border-radius: 24px;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+
+    &.size-sm {
+      max-width: 60px;
+    }
+
+    &.size-md {
+      max-width: 120px;
+    }
+
+    &.size-lg {
+      max-width: 200px;
+    }
+
+    &.circle {
+      border-radius: 50%;
+    }
+  }
+}
+
+// Portal settings end

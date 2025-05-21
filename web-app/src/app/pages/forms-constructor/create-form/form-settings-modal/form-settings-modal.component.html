@@ -1,0 +1,129 @@
+<div class="form-settings-modal">
+  <h2 mat-dialog-title>Настройки формы</h2>
+  <mat-dialog-content>
+    <form [formGroup]="formGroup">
+      <div class="settings-container">
+        <div class="settings-form">
+          <mat-radio-group formControlName="type" class="type-selector">
+            <mat-radio-button value="button">Кнопка</mat-radio-button>
+            <mat-radio-button value="logo">Логотип</mat-radio-button>
+            <mat-radio-button value="normal">Стандартная</mat-radio-button>
+          </mat-radio-group>
+
+          <ng-container *ngIf="formGroup.get('type')?.value === 'button'">
+            <div [formGroup]="buttonForm">
+              <div class="form-unit">
+                <label class="input-label">Текст кнопки</label>
+                <mat-form-field>
+                  <input matInput formControlName="text" placeholder="Введите текст кнопки">
+                </mat-form-field>
+              </div>
+
+              <div class="form-unit">
+                <label class="input-label">Цвет фона</label>
+                <mat-form-field>
+                  <input matInput formControlName="background" type="color">
+                </mat-form-field>
+              </div>
+
+              <div class="form-unit">
+                <label class="input-label">Цвет текста</label>
+                <mat-form-field>
+                  <input matInput formControlName="textColor" type="color">
+                </mat-form-field>
+              </div>
+
+              <div class="form-unit">
+                <label class="input-label">Размер кнопки</label>
+                <mat-form-field>
+                  <mat-select formControlName="size">
+                    <mat-option value="sm">Маленький</mat-option>
+                    <mat-option value="md">Средний</mat-option>
+                    <mat-option value="lg">Большой</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-unit">
+                <label class="input-label">Размер текста</label>
+                <mat-form-field>
+                  <mat-select formControlName="fontSize">
+                    <mat-option value="sm">Маленький</mat-option>
+                    <mat-option value="md">Средний</mat-option>
+                    <mat-option value="lg">Большой</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-unit checkbox-group">
+                <mat-checkbox formControlName="hasShadow">Добавить тень</mat-checkbox>
+                <mat-checkbox formControlName="isRounded">Скругленные углы</mat-checkbox>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="formGroup.get('type')?.value === 'logo'">
+            <div [formGroup]="logoForm">
+              <div class="logo-upload">
+                <input type="file" (change)="onFileSelected($event)" accept="image/*">
+              </div>
+
+              <div class="form-unit">
+                <label class="input-label">Размер</label>
+                <mat-form-field>
+                  <mat-select formControlName="size">
+                    <mat-option value="sm">Маленький</mat-option>
+                    <mat-option value="md">Средний</mat-option>
+                    <mat-option value="lg">Большой</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              
+              <div class="form-unit">
+                <mat-checkbox formControlName="isCircle">Сделать круглым</mat-checkbox>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="formGroup.get('type')?.value === 'normal'">
+            <app-form-components [formData]="data.formElements"></app-form-components>
+          </ng-container>
+        </div>
+
+        <div class="preview-container" *ngIf="formGroup.get('type')?.value !== 'normal'">
+          <h3>Предпросмотр</h3>
+          <div class="preview-content form-settings-container">
+            <ng-container *ngIf="previewSettings.type === 'button'">
+              <button mat-button
+                      [style.background-color]="previewSettings.button?.background"
+                      [style.color]="previewSettings.button?.textColor"
+                      [class.size-sm]="previewSettings.button?.size === 'sm'"
+                      [class.size-md]="previewSettings.button?.size === 'md'"
+                      [class.size-lg]="previewSettings.button?.size === 'lg'"
+                      [class.font-sm]="previewSettings.button?.fontSize === 'sm'"
+                      [class.font-md]="previewSettings.button?.fontSize === 'md'"
+                      [class.font-lg]="previewSettings.button?.fontSize === 'lg'"
+                      [class.has-shadow]="previewSettings.button?.hasShadow"
+                      [class.is-rounded]="previewSettings.button?.isRounded">
+                {{previewSettings.button?.text}}
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="previewSettings.type === 'logo'">
+              <img [src]="previewSettings.logo?.image"
+                   [class.size-sm]="previewSettings.logo?.size === 'sm'"
+                   [class.size-md]="previewSettings.logo?.size === 'md'"
+                   [class.size-lg]="previewSettings.logo?.size === 'lg'"
+                   [class.circle]="previewSettings.logo?.isCircle"
+                   *ngIf="previewSettings.logo?.image">
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="preview-form__actions">
+      <button class="edit-btn" mat-button (click)="close()">Отменить</button>
+      <button class="create-btn" mat-raised-button color="primary" (click)="save()">Сохранить</button>
+    </div>
+  </mat-dialog-content>
+</div>

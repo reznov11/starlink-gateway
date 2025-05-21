@@ -11,6 +11,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { FormComponentsComponent } from '@app/components/form-components/form-components.component';
 
 @Component({
   selector: 'app-preview-form-modal',
@@ -29,7 +30,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatRadioModule,
     MatCheckboxModule,
     MatSnackBarModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    FormComponentsComponent
   ]
 })
 export class PreviewFormModalComponent {

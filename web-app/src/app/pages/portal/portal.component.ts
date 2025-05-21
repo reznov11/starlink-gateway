@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PartnerService } from '@app/services/api/partner';
 import { HttpResponse } from '@angular/common/http';
@@ -14,6 +14,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormElement } from '@app/pages/forms-constructor/create-form/models';
+import { FormComponentsComponent } from '@app/components/form-components/form-components.component';
 
 @Component({
   selector: 'app-portal',
@@ -30,13 +31,15 @@ import { FormElement } from '@app/pages/forms-constructor/create-form/models';
     MatRadioModule,
     FormsModule,
     MatCheckboxModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormComponentsComponent
   ]
 })
 export class PortalComponent implements OnInit {
     isLoading: boolean = false;
     domainCode: string | null = null;
     portalData: FormConstructor | null = null;
+    @Input() settingsPreviewData: FormElement[] | null = null;
     formGroup: FormGroup = new FormGroup({});
 
     constructor(
@@ -46,6 +49,12 @@ export class PortalComponent implements OnInit {
 
     async ngOnInit(): Promise<void> {
         this.isLoading = true;
+        if (this.settingsPreviewData) {
+            this.portalData = {
+                ...this.portalData,
+                components: this.settingsPreviewData
+            } as FormConstructor;
+        }
         this.activatedRoute.queryParams.subscribe(async (params: any) => {
             if (!params['ifr_code']) {
                 throw new Error('Неверный код домена');
