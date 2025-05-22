@@ -1,10 +1,8 @@
 .preview-modal {
-  height: 100%;
-
   .code-block-container {
     position: relative;
   }
-
+  
   p {
     margin: 0;
     color: #757575;
@@ -12,12 +10,14 @@
     align-items: center;
     gap: 0.2rem;
   }
-
+  
   .highlight-container {
+    overflow: auto;
     pre {
       white-space: pre-wrap;
       word-break: keep-all;
       tab-size: 4;
+      padding: 1rem 0;
     }
 
     code {
@@ -48,8 +48,8 @@
 
   .copy-button {
     position: absolute;
-    top: 1.5rem;
-    right: 8px;
+    top: 2rem;
+    right: 0;
     &:hover {
       background-color: rgba(255, 255, 255, 0.9);
     }

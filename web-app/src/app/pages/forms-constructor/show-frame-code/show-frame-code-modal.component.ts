@@ -47,25 +47,31 @@ export class ShowFrameCodeModalComponent implements OnInit {
       this.frameCode = `
 <div data-domain="${this.data.domain!.code}" data-partner="${this.data.partner!.id}"></div>
 <script type="text/javascript">
-    window.partner_id = "${this.data.partner!.id}";
-    window.domain = "${this.data.domain!.code}";
-    window.partner_url = "${this.data.domain!.url}";
-    window.originUrl = this.originUrl;
+    window.partnerId = "${this.data.partner!.id}";
+    window.partnerDomain = "${this.data.domain!.code}";
+    window.partnerUrl = "${this.data.domain!.url}";
+    window.originUrl = "${this.originUrl}";
     window.lang = "ru";
 
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+
     window.fetch(
-        "${this.originUrl}/api/partners/manifest/"
+        "${this.originUrl}/api/partners/manifest/",
+        {
+          headers: headers
+        }
     )
     .then((res) => {
         return res;
     }).then(async (res) => {
         if (res.status === 202) {
-            const ifrPartnerSrc = document.createElement("script");
+            const ifrPartner = document.createElement("script");
             const data = await res.json()
-            ifrPartnerSrc.type = "text/javascript";
-            ifrPartnerSrc.async = true;
-            ifrPartnerSrc.src = data["application"];
-            document.body.appendChild(ifrPartnerSrc);
+            ifrPartner.type = "text/javascript";
+            ifrPartner.async = true;
+            ifrPartner.src = data["application"];
+            document.body.appendChild(ifrPartner);
             return res;
         } else {
             console.log("Error", res);

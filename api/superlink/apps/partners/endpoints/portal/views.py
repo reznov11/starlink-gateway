@@ -54,9 +54,8 @@ class PortalView(APIView):
         )
 
     def _get_request_host(self) -> str:
-        current_host: str = self.request.get_host()
-        current_origin = f'{self.request.scheme}://{current_host}'
-        return current_origin
+        current_host: str = self.request.headers.get('X-Partner-Url')
+        return current_host
 
     @staticmethod
     def _get_check_domain(domain_code: str) -> Domain:

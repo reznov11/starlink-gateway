@@ -6,23 +6,23 @@
     </button>
   </div>
   <div class="preview-modal__content">
-    <ng-container *ngIf="data; else emptyState">
+    <ng-container *ngIf="data && data.partner; else emptyState">
       <p>
         <mat-icon>info</mat-icon>
-        Скопируйте код и отправьте партнеру.
+        Скопируйте код и отправьте партнеру
       </p>
       <div class="code-block-container">
-        <div #highlightContainer class="highlight-container">
-          <pre><code class="iframe_code_block" [innerHTML]="highlightedCode"></code></pre>
-        </div>
-
         <button mat-icon-button class="copy-button" (click)="copyCodeToClipboard()">
           <mat-icon>content_copy</mat-icon>
         </button>
+
+        <div #highlightContainer class="highlight-container">
+          <pre><code class="iframe_code_block" [innerHTML]="highlightedCode"></code></pre>
+        </div>
       </div>
     </ng-container>
     <ng-template #emptyState>
-      <div class="preview-modal__empty">Для этого партнера нет фрейма.</div>
+      <div class="preview-modal__empty">У этого партнера нет фрейма или домена</div>
     </ng-template>
   </div>
 </div>

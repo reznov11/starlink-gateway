@@ -1,17 +1,28 @@
-console.log('Partner IFrame loaded successfully.');
+alert('Partner IFrame loaded successfully.');
+console.log('Partner code', window.partnerDomain);
+console.log('Partner ID', window.partnerId);
+console.log('Partner URL', window.partnerUrl);
 
-console.log('Partner code', window.domain);
-console.log('Partner ID', window.partner_id);
-console.log('Partner URL', window.partner_url);
-
-if (window.domain) {
+if (window.partnerDomain) {
   window.fetch(
-    `http://localhost:4200/api/partners/portal?ifr_code=${window.domain}`
+    `${window.originUrl}/api/partners/portal?ifr_code=${window.partnerDomain}`,
+    {
+      headers: {
+        'X-Partner-Url': window.partnerUrl
+      },
+      mode: 'cors'
+    }
   ).then(function(res) {
     return res;
   }).then(async (res) => {
     if (res.status === 202) {
-      console.log("Data: ", await res.json())
+      const data = await res.json();
+      console.log("Data: ", data)
+
+      const partnerContainer = document.querySelector(`[data-domain="${window.partnerDomain}"]`);
+      if (partnerContainer) {
+        partnerContainer.innerHTML = JSON.stringify(data);
+      }
     } else {
       console.log("Response:", res);
     }
