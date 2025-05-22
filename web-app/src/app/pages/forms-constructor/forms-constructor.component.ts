@@ -10,6 +10,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
 import { FormService } from '@app/services/api/form';
+import {ShowFrameCodeModalComponent} from '@pages/forms-constructor/show-frame-code/show-frame-code-modal.component';
 
 // Generate 100 records
 const FORMS: any[] = Array.from({ length: 100 }, () => generateFormConstructor());
@@ -25,7 +26,8 @@ const FORMS: any[] = Array.from({ length: 100 }, () => generateFormConstructor()
 export class FormsConstructorComponent {
   private dialogSettings: MatDialogConfig = {
     height: 'auto',
-    width: '700px',
+    width: '800px',
+    maxWidth: '800px',
     disableClose: true
   }
   public formConstructorColumns: TableColumn[] = [
@@ -52,7 +54,7 @@ export class FormsConstructorComponent {
     private formService: FormService
   ) {
     this.headerService.setComponent(
-      CreateFormComponent, 
+      CreateFormComponent,
       'Создать форму',
       async () => {
         await this.getFormsList();
@@ -98,6 +100,9 @@ export class FormsConstructorComponent {
       case 'edit':
         this.editForm(event.item);
         break;
+      case 'show_code':
+        this.showFrameCode(event.item);
+        break;
       case 'delete':
         this.deleteForm(event.item);
         break;
@@ -140,6 +145,24 @@ export class FormsConstructorComponent {
             });
           }
         }));
+      }
+    });
+  }
+
+  public showFrameCode(form: FormConstructor) {
+    const dialogRef = this.dialog.open(
+      ShowFrameCodeModalComponent,
+      {
+        ...this.dialogSettings,
+        data: {
+          ...form
+        }
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(async (result: boolean) => {
+      if (result) {
+        console.log('Code copied!')
       }
     });
   }

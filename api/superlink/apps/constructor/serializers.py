@@ -6,6 +6,8 @@ from django.shortcuts import get_object_or_404
 from apps.partners.serializers import PartnerSerializer
 from apps.accounts.serializers import UserSerializer
 
+from apps.domains.serializers import DomainInfoSerializer
+
 
 class ConstructorSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source='public_id', read_only=True)
@@ -22,11 +24,28 @@ class ConstructorListSerializer(serializers.ModelSerializer):
     partner = PartnerSerializer(read_only=True)
     user = UserSerializer(read_only=True)
     settings = serializers.JSONField(required=False)
+    domain = serializers.SerializerMethodField(method_name='get_domain')
 
     class Meta:
         model = Constructor
-        fields = ['id', 'title', 'partner', 'user', 'components_total', 'components', 'created_at', 'settings']
+        fields = [
+            'id',
+            'title',
+            'partner',
+            'user',
+            'components_total',
+            'components',
+            'created_at',
+            'settings',
+            'domain'
+        ]
         read_only_fields = ['created_at']
+
+    def get_domain(self, obj: Constructor):
+        if obj.partner and obj.partner.domain:
+            return DomainInfoSerializer(obj.partner.domain, many=False, read_only=True).data
+
+        return {}
 
 
 class ConstructorCreateSerializer(serializers.ModelSerializer):

@@ -205,3 +205,6 @@ VIDEO_ALLOWED_EXTENSIONS: list[str] = os.getenv('VIDEO_ALLOWED_EXTENSIONS', 'mp4
 LOGIN_HISTORY_DELETE_OLD = literal_eval(os.getenv("DEBUG", "False"))
 LOGIN_HISTORY_KEEP_DAYS = literal_eval(os.getenv("DEBUG", "1"))
 LOGIN_HISTORY_KEEP_LAST = literal_eval(os.getenv("DEBUG", "0"))
+
+# Application JS
+APPLICATION_JS_FILE = os.getenv('APPLICATION_JS_FILE', None)

@@ -78,6 +78,11 @@
             <mat-icon svgIcon="custom_edit"></mat-icon>
             <span>Редактировать</span>
           </button>
+          <button mat-menu-item *ngIf="component! === 'constructor'"
+                  (click)="actionClicked.emit({action: 'show_code', item: element})">
+            <mat-icon svgIcon="custom_code"></mat-icon>
+            <span>Код фрейма</span>
+          </button>
           <button mat-menu-item (click)="actionClicked.emit({action: 'delete', item: element})">
             <mat-icon svgIcon="custom_delete"></mat-icon>
             <span>Удалить</span>

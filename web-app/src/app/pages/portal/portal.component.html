@@ -4,7 +4,7 @@
             <form class="preview-form" autocomplete="off" (ngSubmit)="onSubmit()" [formGroup]="formGroup">
                 <app-form-components [formData]="portalData.components"></app-form-components>
                 <div class="preview-form__actions" *ngIf="!settingsPreviewData">
-                    <button mat-flat-button color="primary" type="submit" class="create-btn">
+                    <button mat-flat-button type="submit" class="create-btn">
                         Отправить
                     </button>
                 </div>
@@ -13,7 +13,7 @@
 
         <div class="form-settings-container">
             <ng-container *ngIf="portalData!.settings!.type === 'button'">
-                <button mat-flat-button class="preview-form__button"
+                <button mat-flat-button class="preview-form__button" [id]="'ifr-btn_'+portalData!.id"
                     [style.background-color]="portalData!.settings!.button!.background"
                     [style.color]="portalData!.settings!.button!.textColor"
                     [class.size-sm]="portalData!.settings!.button!.size === 'sm'"
@@ -31,11 +31,13 @@
 
             <ng-container *ngIf="portalData!.settings!.type === 'logo'">
                 <img [src]="portalData!.settings!.logo!.image"
+                     [id]="'ifr-img_'+portalData!.id"
                     [class.size-sm]="portalData!.settings!.logo!.size === 'sm'"
                     [class.size-md]="portalData!.settings!.logo!.size === 'md'"
                     [class.size-lg]="portalData!.settings!.logo!.size === 'lg'"
                     [class.circle]="portalData!.settings!.logo!.isCircle"
-                    *ngIf="portalData!.settings!.logo!.image">
+                    *ngIf="portalData!.settings!.logo!.image"
+                >
             </ng-container>
         </div>
     </ng-container>

@@ -468,13 +468,15 @@ mat-form-field {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 100%;
 }
 
 .preview-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  justify-content: space-between;
+  height: 100%;
+  margin: 1rem 0;
 }
 
 .preview-modal__element {
@@ -638,6 +640,7 @@ mat-form-field {
     display: flex;
     min-width: 800px;
     gap: 1rem;
+    padding: 1rem 0;
   }
 
   .settings-form {

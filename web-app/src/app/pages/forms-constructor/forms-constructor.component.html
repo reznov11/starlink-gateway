@@ -5,6 +5,7 @@
       [data]="displayedForms"
       [totalItems]="forms.length / pageSize"
       [pageSize]="pageSize"
+      [component]="'constructor'"
       [currentPage]="currentPage"
       [pageSizeOptions]="pageSizeOptions"
       (pageChanged)="onPageChange($event)"

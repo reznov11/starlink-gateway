@@ -62,4 +62,5 @@ export interface FormConstructor {
   components_total?: number;
   components?: FormElement[];
   settings?: FormSettings;
+  domain?: Domain
 }

@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class PartnerService {
-  private apiUrl = `/partners`;
+  public apiUrl = `/partners`;
 
   constructor(private http: HttpClient) { }
 

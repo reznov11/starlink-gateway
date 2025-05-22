@@ -26,6 +26,10 @@ export class IconsRegistryService {
         this.sanitizer.bypassSecurityTrustResourceUrl('/assets/tables/add.svg')
       )
       .addSvgIcon(
+        'custom_code',
+        this.sanitizer.bypassSecurityTrustResourceUrl('/assets/tables/code.svg')
+      )
+      .addSvgIcon(
         'custom_calendar',
         this.sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/calendar.svg')
       )

@@ -6,6 +6,14 @@ from django.shortcuts import get_object_or_404
 from apps.partners.serializers import PartnerSerializer
 
 
+class DomainInfoSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source='public_id', read_only=True)
+
+    class Meta:
+        model = Domain
+        fields = ['id', 'code', 'url']
+
+
 class DomainListSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source='public_id', read_only=True)
     partner = PartnerSerializer(read_only=True)

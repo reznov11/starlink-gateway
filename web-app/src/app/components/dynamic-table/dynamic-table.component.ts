@@ -59,6 +59,7 @@ export class DynamicTableComponent implements OnInit, OnChanges {
   @Input() totalItems = 0;
   @Input() pageSize = 10;
   @Input() currentPage = 0;
+  @Input() public component?: string;
   @Input() pageSizeOptions = [5, 10, 20];
 
   @Output() actionClicked = new EventEmitter<{action: string, item: any}>();
