@@ -450,6 +450,7 @@
         -webkit-transform: translateY(-100px);
         transform: translateY(-100px);
     }
+
     to {
         opacity: 1;
         -webkit-transform: translateY(0);
@@ -462,6 +463,7 @@
         opacity: 1;
         transform: translateY(0);
     }
+
     to {
         opacity: 0;
         transform: translateY(-100px);
