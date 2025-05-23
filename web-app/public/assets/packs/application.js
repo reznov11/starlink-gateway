@@ -1,14 +1,30 @@
 if (window.partnerDomain) {
   const sanitizeString = (str) => {
     if (typeof str !== 'string') return '';
-    return str.replace(/[^a-zA-Z0-9_-]/g, '');
+    return str.replace(/[^a-zA-Z0-9_-]/g, '').trim();
   };
+
+  const ALLOWED_TAGS = [
+    'div', 'form', 'input', 'label', 'select', 'option', 'textarea', 'button',
+    'span', 'img', 'p', 'strong', 'em', 'ul', 'li', 'ol', 'br', 'hr',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'video'
+  ]
+
+  const ALLOWED_ATTR = [
+    'class', 'id', 'name', 'type', 'value', 'placeholder', 'for', 'checked',
+    'selected', 'onclick', 'onchange', 'oninput', 'style', 'src', 'title', 'alt',
+    'data-partner-*'
+  ]
+
+  const ALLOWED_ATTR_VALUES = {
+    'data-partner-id': /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
+    'data-partner-domain': /^IFRM-\d{6}$/
+  }
 
   const secureFetch = async (url, headers = {}) => {
     try {
       const response = await fetch(url, {
         headers: { ...headers, 'Content-Type': 'application/json' },
-        mode: 'cors',
         credentials: 'same-origin'
       });
       if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
@@ -36,7 +52,7 @@ if (window.partnerDomain) {
 
       if (response.status === 202) {
         const data = await response.text();
-        const partnerContainer = document.querySelector(`[data-partner="${partnerId}"]`);
+        const partnerContainer = document.querySelector(`[data-partner-id="${partnerId}"]`);
 
         if (partnerContainer) {
           console.info('Partner metadata:', { partnerDomain, partnerId, partnerUrl });
@@ -44,7 +60,12 @@ if (window.partnerDomain) {
 
           partnerContainer.textContent = '';
           const template = document.createElement('template');
-          template.innerHTML = data;
+          template.innerHTML = DOMPurify.sanitize(data, {
+            ALLOWED_TAGS: ALLOWED_TAGS,
+            ALLOWED_ATTR: ALLOWED_ATTR,
+            ALLOWED_ATTR_VALUES: ALLOWED_ATTR_VALUES,
+            WHOLE_DOCUMENT: false
+          });
           partnerContainer.appendChild(template.content.cloneNode(true));
 
           const partnerForm = partnerContainer.querySelector('form');

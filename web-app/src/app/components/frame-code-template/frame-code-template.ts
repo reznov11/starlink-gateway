@@ -1,5 +1,5 @@
 export function getFrameCodeTemplate(data: any, originUrl: string): string {
-    return `<div data-domain="${data.domain!.code}" data-partner="${data.partner!.id}"></div>
+    return `<div data-partner-domain="${data.domain!.code}" data-partner-id="${data.partner!.id}"></div>
   <script type="text/javascript">
       window.partnerId = "${data.partner!.id}";
       window.partnerDomain = "${data.domain!.code}";
@@ -13,17 +13,26 @@ export function getFrameCodeTemplate(data: any, originUrl: string): string {
       }).then(async (res) => {
         if (res.status === 202) {
           const ifrPartnerStyle = document.createElement("link");
-          const ifrPartner = document.createElement("script");
+          const ifrPartnerJs = document.createElement("script");
+          const purifyJs = document.createElement("script");
           const data = await res.json()
           ifrPartnerStyle.href = data["application.css"];
           ifrPartnerStyle.type = "text/css";
           ifrPartnerStyle.rel = "stylesheet";
           ifrPartnerStyle.async = true;
-          ifrPartner.type = "text/javascript";
-          ifrPartner.async = true;
-          ifrPartner.src = data["application.js"];
-          document.head.appendChild(ifrPartnerStyle);
-          document.body.appendChild(ifrPartner);
+          ifrPartnerJs.type = "text/javascript";
+          ifrPartnerJs.async = true;
+          ifrPartnerJs.src = data["application.js"];
+          purifyJs.src = data["purify.js"];
+          purifyJs.type = "text/javascript";
+          purifyJs.async = true;
+          [ifrPartnerStyle, purifyJs, ifrPartnerJs].forEach(element => {
+            if (element.type === "text/css") {
+              document.head.appendChild(element);
+            } else {
+              document.body.appendChild(element);
+            }
+          });
           return res;
         } else {
           console.log("Error", res);
