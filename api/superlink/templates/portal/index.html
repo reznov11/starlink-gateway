@@ -1,0 +1,55 @@
+{% load app_filters %}
+
+<div class="partner-form-container">
+    {% if partner_form %}
+        {% if form_settings.type == 'button' %}
+
+            <button 
+            title="{{ form_settings.button.text }}" 
+            class="form-button size-{{ form_settings.button.size }} 
+            font-{{ form_settings.button.fontSize }} 
+            {% if form_settings.button.hasShadow %}has-shadow{% endif %} 
+            {% if form_settings.button.isRounded %}is-rounded{% endif %}"
+
+            style="background-color: {{ form_settings.button.background }};
+                color: {{ form_settings.button.textColor }};" 
+                onclick="partnerOpenModal_{{ partner_id | replace_string:'-' }}('partnerFormModal_{{ partner_id }}')">
+
+                {{ form_settings.button.text }}
+
+            </button>
+
+        {% elif form_settings.type == 'logo' %}
+
+            {% if form_settings.logo.image %}
+                <img src="{{ form_settings.logo.image }}" 
+                title="{{ form_settings.logo.text }}"
+                class="form-logo size-{{ form_settings.logo.size }} 
+                {% if form_settings.logo.isCircle %}circle{% endif %}" 
+                alt="Partner Logo" 
+                onclick="partnerOpenModal_{{ partner_id | replace_string:'-' }}('partnerFormModal_{{ partner_id }}')">
+            {% endif %}
+
+        {% endif %}
+
+        {% if show_modal %}
+            <div id="partnerFormModal_{{ partner_id }}" class="partner-form-modal">
+                <div class="partner-form-modal-content">
+                    <span class="close-modal" 
+                    onclick="partnerCloseModal_{{ partner_id | replace_string:'-' }}('partnerFormModal_{{ partner_id }}')">
+                        &times;
+                    </span>
+                    {% include 'portal/includes/partner_form_block.html' %}
+                </div>
+            </div>
+
+        {% elif form_settings.type == 'normal' %}
+            <div class="partner-form-modal-content partner-form-normal">
+                {% include 'portal/includes/partner_form_block.html' %}
+            </div>
+
+        {% endif %}
+    {% else %}
+        <p>Нет данных для отображения</p>
+    {% endif %}
+</div>

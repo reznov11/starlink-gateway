@@ -1,0 +1,64 @@
+<div class="modal-main-title">{{ partner_form.title }}</div>
+<form class="form-group">
+    {% for component in partner_form.components %}
+        <div class="form-unit">
+            {% if component.type == 'heading' %}
+                <div class="modal-title">{{ component.value }}</div>
+
+            {% elif component.type == 'paragraph' %}
+                <div class="preview-form__paragraph">
+                {{ component.value }}
+                </div>
+
+            {% elif component.type == 'radio' %}
+                <div class="radio-group">
+                    {% for option in component.options %}
+                        <label class="custom-radio">
+                            <input type="radio" name="{{ component.id }}" value="{{ option.id }}"
+                            {% if component.value == option.id %}checked{% endif %}>
+                            <span class="radio-mark"></span>
+                            {{ option.value }}
+                        </label>
+                    {% endfor %}
+                </div>
+
+            {% elif component.type == 'textfield' %}
+                <input class="form-input" type="text" id="{{ component.id }}" name="{{ component.id }}" 
+                placeholder="Введите текст">
+
+            {% elif component.type == 'phone' %}
+                <input class="form-input" type="tel" id="{{ component.id }}" name="{{ component.id }}" 
+                placeholder="+996">
+
+            {% elif component.type == 'dropdown' %}
+                <select class="form-select" id="{{ component.id }}" name="{{ component.id }}">
+                    {% for option in component.options %}
+                        <option value="{{ option.id }}" {% if component.value == option.id %}selected{% endif %}>{{ option.value }}</option>
+                    {% endfor %}
+                </select>
+
+            {% elif component.type == 'checkbox' %}
+                <div class="checkbox-group">
+                    {% for option in component.options %}
+                        <label class="custom-checkbox">
+                            <input type="checkbox" value="{{ option.id }}" {% if component.value == option.id %}checked{% endif %}>
+                            <span class="checkbox-mark"></span>
+                            {{ option.value }}
+                        </label>
+                    {% endfor %}
+                </div>
+
+            {% elif component.type == 'paragraph' %}
+                <div style="font-size:15px; color:#222; margin-bottom:8px;">{{ component.value }}</div>
+
+            {% elif component.type == 'info' %}
+                <div class="preview-form__info-block">
+                {{ component.value }}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </div>
+</form>

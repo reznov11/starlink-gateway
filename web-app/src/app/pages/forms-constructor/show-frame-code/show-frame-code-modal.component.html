@@ -1,6 +1,6 @@
 <div class="preview-modal">
   <div class="preview-modal__header">
-    <h2 class="preview-modal__title">Код фрейма</h2>
+    <h2 class="preview-modal__title">Код фрейма {{ data?.partner?.name || 'партнера' }}</h2>
     <button mat-icon-button (click)="close()" aria-label="Закрыть">
       <mat-icon>close</mat-icon>
     </button>
@@ -10,12 +10,11 @@
       <p>
         <mat-icon>info</mat-icon>
         Скопируйте код и отправьте партнеру
-      </p>
-      <div class="code-block-container">
         <button mat-icon-button class="copy-button" (click)="copyCodeToClipboard()">
           <mat-icon>content_copy</mat-icon>
         </button>
-
+      </p>
+      <div class="code-block-container">
         <div #highlightContainer class="highlight-container">
           <pre><code class="iframe_code_block" [innerHTML]="highlightedCode"></code></pre>
         </div>

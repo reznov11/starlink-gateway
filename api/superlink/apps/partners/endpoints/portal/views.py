@@ -1,5 +1,6 @@
 from django.conf import settings
 from rest_framework import status
+from django.shortcuts import render
 from rest_framework.views import APIView
 from django.http import HttpRequest, JsonResponse
 from core.exceptions import CustomNotFound, CustomBadRequest, CustomNotAuthorized
@@ -15,10 +16,11 @@ from apps.constructor.serializers import ConstructorSerializer
 
 class PackManifest(APIView):
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        if settings.APPLICATION_JS_FILE:
+        if settings.APPLICATION_JS_FILE and settings.APPLICATION_CSS_FILE:
             return JsonResponse(
                 {
-                    'application': settings.APPLICATION_JS_FILE
+                    'application.js': settings.APPLICATION_JS_FILE,
+                    'application.css': settings.APPLICATION_CSS_FILE
                 },
                 status=status.HTTP_202_ACCEPTED
             )
@@ -48,10 +50,12 @@ class PortalView(APIView):
         if not self._form_has_components(form=partner_form):
             raise CustomBadRequest('Нет компонентов.')
 
-        return JsonResponse(
-            ConstructorSerializer(partner_form).data,
-            status=status.HTTP_202_ACCEPTED
-        )
+        return render(request, 'portal/index.html', {
+            'partner_form': partner_form,
+            'form_settings': partner_form.settings,
+            'partner_id': partner_form.partner.public_id,
+            'show_modal': partner_form.settings['type'] in ['button', 'logo']
+        }, status=status.HTTP_202_ACCEPTED)
 
     def _get_request_host(self) -> str:
         current_host: str = self.request.headers.get('X-Partner-Url')

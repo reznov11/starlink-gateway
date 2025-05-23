@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     'apps.domains',
     'apps.partners',
     'apps.constructor',
+    'macros',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'app_filters': 'core.temp_filters',
+            }
         },
     },
 ]
@@ -219,3 +223,4 @@ LOGIN_HISTORY_KEEP_LAST = literal_eval(os.getenv("DEBUG", "0"))
 
 # Application JS
 APPLICATION_JS_FILE = os.getenv('APPLICATION_JS_FILE', None)
+APPLICATION_CSS_FILE = os.getenv('APPLICATION_CSS_FILE', None)

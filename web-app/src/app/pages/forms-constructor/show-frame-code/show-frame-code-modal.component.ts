@@ -5,10 +5,9 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-
+import { getFrameCodeTemplate } from '@app/components/frame-code-template/frame-code-template';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
-import {Highlight} from 'ngx-highlightjs';
 
 @Component({
   selector: 'app-show-frame-code-modal',
@@ -18,8 +17,7 @@ import {Highlight} from 'ngx-highlightjs';
     CommonModule,
     MatDialogModule,
     MatButtonModule,
-    MatIconModule,
-    Highlight
+    MatIconModule
   ]
 })
 export class ShowFrameCodeModalComponent implements OnInit {
@@ -43,43 +41,7 @@ export class ShowFrameCodeModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.data) {
-
-      this.frameCode = `
-<div data-domain="${this.data.domain!.code}" data-partner="${this.data.partner!.id}"></div>
-<script type="text/javascript">
-    window.partnerId = "${this.data.partner!.id}";
-    window.partnerDomain = "${this.data.domain!.code}";
-    window.partnerUrl = "${this.data.domain!.url}";
-    window.originUrl = "${this.originUrl}";
-    window.lang = "ru";
-
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
-
-    window.fetch(
-        "${this.originUrl}/api/partners/manifest/",
-        {
-          headers: headers
-        }
-    )
-    .then((res) => {
-        return res;
-    }).then(async (res) => {
-        if (res.status === 202) {
-            const ifrPartner = document.createElement("script");
-            const data = await res.json()
-            ifrPartner.type = "text/javascript";
-            ifrPartner.async = true;
-            ifrPartner.src = data["application"];
-            document.body.appendChild(ifrPartner);
-            return res;
-        } else {
-            console.log("Error", res);
-            return;
-        }
-    });
-</script>
-`;
+      this.frameCode = getFrameCodeTemplate(this.data, this.originUrl);
       this.highlightedCode = hljs.highlight(
         this.frameCode,
         {
@@ -99,7 +61,8 @@ export class ShowFrameCodeModalComponent implements OnInit {
     if (success) {
       this.snackBar.open('Код успешно скопирован!', 'Закрыть', {
         duration: 3000,
-        panelClass: 'success-snackbar'
+        panelClass: 'success-snackbar',
+        verticalPosition: 'top',
       });
     } else {
       this.snackBar.open('Не удалось скопировать код', 'Закрыть', {

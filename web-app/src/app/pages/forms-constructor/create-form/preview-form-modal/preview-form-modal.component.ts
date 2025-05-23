@@ -39,7 +39,9 @@ export class PreviewFormModalComponent {
     public dialogRef: MatDialogRef<PreviewFormModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { formElements: any[]; title: string },
     private snackBar: MatSnackBar
-  ) { }
+  ) {
+    console.log(this.data);
+  }
 
   close(): void {
     this.dialogRef.close();
