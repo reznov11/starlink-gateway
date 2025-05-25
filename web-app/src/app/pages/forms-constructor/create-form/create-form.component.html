@@ -99,9 +99,15 @@
                   <mat-icon>{{ element.icon }}</mat-icon>
                   <span class="form-element-label">{{ element.label }}</span>
                 </div>
-                <button mat-icon-button (click)="removeElement(i)">
-                  <mat-icon [svgIcon]="'custom_delete'"></mat-icon>
-                </button>
+                <div class="form-element__actions">
+                  <mat-checkbox [checked]="element.required" (change)="toggleRequired(element)" 
+                  *ngIf="element.type == 'heading'">
+                    Обязательное
+                  </mat-checkbox>
+                  <button mat-icon-button (click)="removeElement(i)">
+                    <mat-icon [svgIcon]="'custom_delete'"></mat-icon>
+                  </button>
+                </div>
               </div>
               <div [ngSwitch]="element.type" class="form-element__content">
 

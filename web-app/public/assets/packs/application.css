@@ -88,13 +88,20 @@
     color: var(--text-color);
 }
 
-.partner-form-container .modal-title {
+.partner-form-container .form-unit label {
     margin: 0;
     font-weight: 400;
     font-size: 14px;
     line-height: 0;
     letter-spacing: 0%;
+    line-height: 1.5rem;
     color: var(--text-color);
+}
+
+.partner-form-container label .required {
+    content: "*";
+    color: #ff4444;
+    margin-left: 4px;
 }
 
 .partner-form-container .form-group {

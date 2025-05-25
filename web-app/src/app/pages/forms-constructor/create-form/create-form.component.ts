@@ -362,4 +362,8 @@ export class CreateFormComponent implements OnInit {
       }
     });
   }
+
+  public toggleRequired(element: FormElement): void {
+    element.required = !element.required;
+  }
 }

@@ -3,11 +3,17 @@
     {% for component in partner_form.components %}
         <div class="form-unit">
             {% if component.type == 'heading' %}
-                <div class="modal-title">{{ component.value }}</div>
+                <label class="form-unit-label">
+                    {{ component.value }}
+
+                    {% if component.required %}
+                        <span class="required">*</span>
+                    {% endif %}
+                </label>
 
             {% elif component.type == 'paragraph' %}
                 <div class="preview-form__paragraph">
-                {{ component.value }}
+                    {{ component.value }}
                 </div>
 
             {% elif component.type == 'radio' %}
@@ -16,8 +22,8 @@
                         <label class="custom-radio">
                             <input type="radio" name="{{ component.id }}" value="{{ option.id }}"
                             {% if component.required %}required{% endif %}
-                            {% if component.value == option.id %}checked{% endif %} required>
-                            <span class="radio-mark"></span>
+                            {% if component.value == option.id %}checked{% endif %}>
+                                <span class="radio-mark"></span>
                             {{ option.value }}
                         </label>
                     {% endfor %}
@@ -25,15 +31,16 @@
 
             {% elif component.type == 'textfield' %}
                 <input class="form-input" type="text" id="{{ component.id }}" name="{{ component.id }}" 
-                placeholder="Введите текст" {% if component.required %}required{% endif %} required>
+                placeholder="Введите текст" {% if component.required %}required{% endif %}>
 
             {% elif component.type == 'phone' %}
                 <input class="form-input" type="tel" id="{{ component.id }}" name="{{ component.id }}" 
                 placeholder="+996" {% if component.required %}required{% endif %}
-                pattern="\+?\d{10,15}" required>
+                pattern="\+?\d{10,15}">
 
             {% elif component.type == 'dropdown' %}
-                <select required class="form-select" id="{{ component.id }}" name="{{ component.id }}" {% if component.required %}required{% endif %}>
+                <select class="form-select" id="{{ component.id }}" name="{{ component.id }}" 
+                {% if component.required %}required{% endif %}>
                     <option value="" disabled selected>Выберите вариант</option>
                     {% for option in component.options %}
                         <option value="{{ option.id }}" {% if component.value == option.id %}selected{% endif %}>{{ option.value }}</option>
@@ -68,6 +75,6 @@
         <button type="submit" class="btn btn-primary" disabled>Отправить</button>
     </div>
     <div id="form-success-message" class="success-message" style="display:none;">
-        Заявка успешно отправлена. Мы свяжемся с вами в ближайшее время.
+        Заявка успешно отправлена. <br> Мы свяжемся с вами в ближайшее время.
     </div>
 </form>

@@ -59,13 +59,16 @@ if (window.partnerDomain) {
           console.info('_+_+_+_ Bakaikg Partner IFrame loaded successfully. _+_+_+_');
 
           partnerContainer.textContent = '';
+
           const template = document.createElement('template');
+
           template.innerHTML = DOMPurify.sanitize(data, {
             ALLOWED_TAGS: ALLOWED_TAGS,
             ALLOWED_ATTR: ALLOWED_ATTR,
             ALLOWED_ATTR_VALUES: ALLOWED_ATTR_VALUES,
             WHOLE_DOCUMENT: false
           });
+
           partnerContainer.appendChild(template.content.cloneNode(true));
 
           const partnerForm = partnerContainer.querySelector('form');
@@ -82,9 +85,11 @@ if (window.partnerDomain) {
                 if (!isValid && field.required) {
                   errorElement.textContent = 'Это поле обязательно для заполнения';
                   errorElement.style.display = 'block';
+
                   field.classList.add('error');
                 } else {
                   errorElement.style.display = 'none';
+
                   field.classList.remove('error');
                 }
               }
@@ -120,6 +125,7 @@ if (window.partnerDomain) {
                 input.addEventListener('change', () => {
                   const groupName = input.name;
                   const group = document.querySelectorAll(`[name="${groupName}"]`);
+
                   group.forEach(radio => validateField(radio));
                   validateForm();
                 });
@@ -142,11 +148,12 @@ if (window.partnerDomain) {
 
                 formInputs.forEach(input => {
                   const errorElement = document.getElementById(`error-${input.name}`);
+
                   if (errorElement) {
                     errorElement.style.display = 'none';
                   }
-                  input.classList.remove('error');
 
+                  input.classList.remove('error');
                   submitButton.remove();
                 });
 
