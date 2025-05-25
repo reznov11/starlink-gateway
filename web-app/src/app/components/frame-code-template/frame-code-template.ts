@@ -23,9 +23,9 @@ export function getFrameCodeTemplate(data: any, originUrl: string): string {
           ifrPartnerJs.type = "text/javascript";
           ifrPartnerJs.async = true;
           ifrPartnerJs.src = data["application.js"];
-          purifyJs.src = data["purify.js"];
           purifyJs.type = "text/javascript";
           purifyJs.async = true;
+          purifyJs.src = data["purify.js"];
           [ifrPartnerStyle, purifyJs, ifrPartnerJs].forEach(element => {
             if (element.type === "text/css") {
               document.head.appendChild(element);
