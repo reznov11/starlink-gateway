@@ -443,6 +443,38 @@
     color: #27323c;
 }
 
+/* Form error */
+.partner-form-container .form-input.error,
+.partner-form-container .form-select.error,
+.partner-form-container .form-textarea.error {
+    border: 1px solid #ff4444 !important;
+    box-shadow: 0 0 0 1px #ff4444 !important;
+}
+
+.partner-form-container .error-message {
+    color: #ff4444;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.partner-form-container .success-message {
+    color: #00C851;
+    font-size: 16px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.partner-form-container .form-input:focus,
+.partner-form-container .form-select:focus,
+.partner-form-container .form-textarea:focus {
+    border-color: #4285f4;
+    box-shadow: 0 0 0 1px #4285f4;
+    outline: none;
+}
+
+/* Form error end */
+
 /* Animation keysframes */
 @keyframes fadeInDown {
     from {

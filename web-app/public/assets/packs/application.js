@@ -13,7 +13,7 @@ if (window.partnerDomain) {
   const ALLOWED_ATTR = [
     'class', 'id', 'name', 'type', 'value', 'placeholder', 'for', 'checked',
     'selected', 'onclick', 'onchange', 'oninput', 'style', 'src', 'title', 'alt',
-    'data-partner-*'
+    'data-partner-*', 'required', 'pattern', 'min', 'max', 'minlength', 'maxlength'
   ]
 
   const ALLOWED_ATTR_VALUES = {
@@ -70,12 +70,92 @@ if (window.partnerDomain) {
 
           const partnerForm = partnerContainer.querySelector('form');
           if (partnerForm) {
-            partnerForm.addEventListener('submit', (event) => {
-              event.preventDefault();
-              const formData = new FormData(partnerForm);
-              console.debug('Form submitted (sanitized):', Object.fromEntries(formData));
+            const submitButton = partnerForm.querySelector('button[type="submit"]');
+            const formInputs = partnerForm.querySelectorAll("input, select, textarea");
+            const successMessage = partnerForm.querySelector('#form-success-message');
 
-              // TODO: Add actual form submission logic
+            function validateField(field) {
+              const errorElement = document.getElementById(`error-${field.name}`);
+              const isValid = field.checkValidity();
+
+              if (errorElement) {
+                if (!isValid && field.required) {
+                  errorElement.textContent = 'Это поле обязательно для заполнения';
+                  errorElement.style.display = 'block';
+                  field.classList.add('error');
+                } else {
+                  errorElement.style.display = 'none';
+                  field.classList.remove('error');
+                }
+              }
+
+              return isValid;
+            };
+
+            function validateForm() {
+              let formIsValid = true;
+
+              formInputs.forEach(input => {
+                if (!validateField(input)) {
+                  formIsValid = false;
+                }
+              });
+
+              submitButton.disabled = !formIsValid;
+              return formIsValid;
+            };
+
+            formInputs.forEach(input => {
+              input.addEventListener('input', () => {
+                validateField(input);
+                validateForm();
+              });
+
+              input.addEventListener('blur', () => {
+                validateField(input);
+                validateForm();
+              });
+
+              if (input.type === 'radio' || input.type === 'checkbox') {
+                input.addEventListener('change', () => {
+                  const groupName = input.name;
+                  const group = document.querySelectorAll(`[name="${groupName}"]`);
+                  group.forEach(radio => validateField(radio));
+                  validateForm();
+                });
+              }
+            });
+
+            partnerForm.addEventListener('submit', async (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              if (!validateForm()) return;
+
+              const formData = new FormData(partnerForm);
+
+              try {
+                submitButton.disabled = true;
+                successMessage.style.display = 'block';
+
+                partnerForm.reset();
+
+                formInputs.forEach(input => {
+                  const errorElement = document.getElementById(`error-${input.name}`);
+                  if (errorElement) {
+                    errorElement.style.display = 'none';
+                  }
+                  input.classList.remove('error');
+
+                  submitButton.remove();
+                });
+
+              } catch (error) {
+                submitButton.disabled = false;
+                console.error('Form submission error:', error);
+              } finally {
+                console.debug('Form submitted (sanitized):', Object.fromEntries(formData));
+              }
             });
           }
         }
@@ -114,6 +194,7 @@ if (window.partnerDomain) {
         if (!modal) return;
 
         const modalContent = modal.querySelector('.partner-form-modal-content');
+
         if (!modalContent) return;
 
         modalContent.classList.add('fadeOutUp');

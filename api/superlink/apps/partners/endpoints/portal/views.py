@@ -28,6 +28,7 @@ class PackManifest(APIView):
                     "application.js": settings.APPLICATION_JS_FILE,
                     "purify.js": settings.PURIFY_JS_FILE,
                     "application.css": settings.APPLICATION_CSS_FILE,
+                    "origins": settings.IFRAME_APPLICATION_TRUSTED_ORIGINS,
                 },
                 status=status.HTTP_202_ACCEPTED,
             )

@@ -225,3 +225,6 @@ LOGIN_HISTORY_KEEP_LAST = literal_eval(os.getenv("DEBUG", "0"))
 APPLICATION_JS_FILE = os.getenv('APPLICATION_JS_FILE', None)
 APPLICATION_CSS_FILE = os.getenv('APPLICATION_CSS_FILE', None)
 PURIFY_JS_FILE = os.getenv('PURIFY_JS_FILE', None)
+
+# Application trusted origins
+IFRAME_APPLICATION_TRUSTED_ORIGINS = os.getenv('IFRAME_APPLICATION_TRUSTED_ORIGINS', '').split(',')

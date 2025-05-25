@@ -1,5 +1,5 @@
 <div class="modal-main-title">{{ partner_form.title }}</div>
-<form class="form-group">
+<form class="form-group" role="form" novalidate="novalidate">
     {% for component in partner_form.components %}
         <div class="form-unit">
             {% if component.type == 'heading' %}
@@ -15,7 +15,8 @@
                     {% for option in component.options %}
                         <label class="custom-radio">
                             <input type="radio" name="{{ component.id }}" value="{{ option.id }}"
-                            {% if component.value == option.id %}checked{% endif %}>
+                            {% if component.required %}required{% endif %}
+                            {% if component.value == option.id %}checked{% endif %} required>
                             <span class="radio-mark"></span>
                             {{ option.value }}
                         </label>
@@ -24,14 +25,16 @@
 
             {% elif component.type == 'textfield' %}
                 <input class="form-input" type="text" id="{{ component.id }}" name="{{ component.id }}" 
-                placeholder="Введите текст">
+                placeholder="Введите текст" {% if component.required %}required{% endif %} required>
 
             {% elif component.type == 'phone' %}
                 <input class="form-input" type="tel" id="{{ component.id }}" name="{{ component.id }}" 
-                placeholder="+996">
+                placeholder="+996" {% if component.required %}required{% endif %}
+                pattern="\+?\d{10,15}" required>
 
             {% elif component.type == 'dropdown' %}
-                <select class="form-select" id="{{ component.id }}" name="{{ component.id }}">
+                <select required class="form-select" id="{{ component.id }}" name="{{ component.id }}" {% if component.required %}required{% endif %}>
+                    <option value="" disabled selected>Выберите вариант</option>
                     {% for option in component.options %}
                         <option value="{{ option.id }}" {% if component.value == option.id %}selected{% endif %}>{{ option.value }}</option>
                     {% endfor %}
@@ -41,7 +44,8 @@
                 <div class="checkbox-group">
                     {% for option in component.options %}
                         <label class="custom-checkbox">
-                            <input type="checkbox" value="{{ option.id }}" {% if component.value == option.id %}checked{% endif %}>
+                            <input type="checkbox" value="{{ option.id }}" {% if component.value == option.id %}checked{% endif %}
+                            id="{{ component.id }}" name="{{ component.id }}" {% if component.required %}required{% endif %}>
                             <span class="checkbox-mark"></span>
                             {{ option.value }}
                         </label>
@@ -56,9 +60,14 @@
                 {{ component.value }}
                 </div>
             {% endif %}
+
+            <div class="error-message" id="error-{{ component.id }}"></div>
         </div>
     {% endfor %}
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Отправить</button>
+        <button type="submit" class="btn btn-primary" disabled>Отправить</button>
+    </div>
+    <div id="form-success-message" class="success-message" style="display:none;">
+        Заявка успешно отправлена. Мы свяжемся с вами в ближайшее время.
     </div>
 </form>
