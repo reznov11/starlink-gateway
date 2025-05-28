@@ -66,7 +66,7 @@ if (window.partnerDomain) {
 
       if (response.status === 202) {
         const data = await response.text();
-        const partnerContainer = document.querySelector(`[data-partner-id="${partnerId}"]`);
+        const partnerContainer = document.querySelector(`bakai-partner`);
 
         if (partnerContainer) {
           console.info('Partner metadata:', { partnerDomain, partnerId, partnerUrl });

@@ -1,6 +1,6 @@
 export function getFrameCodeTemplate(data: any, originUrl: string): string {
     return `<!-- Вставьте этот HTML-код в то место, где вы хотите отобразить форму. -->
-<div data-partner-domain="${data.domain!.code}" data-partner-id="${data.partner!.id}"></div>
+<bakai-partner data-partner-domain="${data.domain!.code}" data-partner-id="${data.partner!.id}"></bakai-partner>
 
   <!-- Вставьте этот код внутри тега <body> -->
   <script type="text/javascript">
