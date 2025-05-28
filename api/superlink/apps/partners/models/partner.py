@@ -7,6 +7,7 @@ class Partner(BaseModel):
     name = models.CharField(max_length=255, verbose_name=_("Название компании"))
     login = models.CharField(max_length=255, verbose_name=_("Логин"), null=True, blank=True)
     phone_number = models.CharField(max_length=255, verbose_name=_("Номер телефона"), null=True, blank=True)
+    source = models.CharField(max_length=255, verbose_name=_("Источник"))
     email = models.EmailField(verbose_name=_("Электронная почта"), null=True, blank=True)
     logo = models.ImageField(upload_to="partner_logos/", null=True, blank=True, verbose_name=_("Логотип"))
     person_contact = models.CharField(max_length=255, verbose_name=_("Контактное лицо"))

@@ -14,6 +14,7 @@
     --radio-bg: #fff;
     --input-placeholder: #bdbdbd;
     --modal-radius: 28px;
+    --required-input: #c72a2a;
 }
 
 :where([data-partner], [data-domain]) {
@@ -40,7 +41,7 @@
 .partner-form-container .partner-form-modal-content {
     background: #fff;
     border-radius: var(--modal-radius);
-    box-shadow: var(--shadow-color);
+    /*box-shadow: var(--shadow-color);*/
     max-width: 800px;
     width: 100%;
     padding: 2rem 2rem 24px 2rem;
@@ -50,6 +51,7 @@
     gap: 1rem;
     max-height: calc(100vh - 150px);
     overflow-y: auto;
+    border: 1px solid #EEEEEE
 }
 
 .partner-form-container .partner-form-normal {
@@ -88,12 +90,24 @@
     color: var(--text-color);
 }
 
+.partner-form-container .n-display {
+  display: none;
+}
+
+.partner-form-container .n-visible {
+  visibility: hidden;
+}
+
+.partner-form-container .form-unit .required label::after {
+  content: " *";
+  color: var(--required-input);
+}
+
 .partner-form-container .form-unit label {
     margin: 0;
     font-weight: 400;
     font-size: 14px;
-    line-height: 0;
-    letter-spacing: 0%;
+    letter-spacing: 0;
     line-height: 1.5rem;
     color: var(--text-color);
 }
@@ -282,6 +296,10 @@
     border: 2px solid var(--primary-color);
     cursor: pointer;
     transition: background 0.2s, color 0.2s, border 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .partner-form-container .btn-primary {
@@ -482,7 +500,43 @@
 
 /* Form error end */
 
-/* Animation keysframes */
+/* Animation keys frames */
+.sending-loader {
+  position: relative;
+  left: -9999px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #FFFFFF;
+  color: #FFFFFF;
+  box-shadow: 9984px 0 0 0 #FFFFFF, 9999px 0 0 0 #FFFFFF, 10014px 0 0 0 #FFFFFF;
+  animation: dot-typing 1.5s infinite linear;
+}
+
+@keyframes dot-typing {
+  0% {
+    box-shadow: 9984px 0 0 0 #FFFFFF, 9999px 0 0 0 #FFFFFF, 10014px 0 0 0 #FFFFFF;
+  }
+  16.667% {
+    box-shadow: 9984px -10px 0 0 #FFFFFF, 9999px 0 0 0 #FFFFFF, 10014px 0 0 0 #FFFFFF;
+  }
+  33.333% {
+    box-shadow: 9984px 0 0 0 #FFFFFF, 9999px 0 0 0 #FFFFFF, 10014px 0 0 0 #FFFFFF;
+  }
+  50% {
+    box-shadow: 9984px 0 0 0 #FFFFFF, 9999px -10px 0 0 #FFFFFF, 10014px 0 0 0 #FFFFFF;
+  }
+  66.667% {
+    box-shadow: 9984px 0 0 0 #FFFFFF, 9999px 0 0 0 #FFFFFF, 10014px 0 0 0 #FFFFFF;
+  }
+  83.333% {
+    box-shadow: 9984px 0 0 0 #FFFFFF, 9999px 0 0 0 #FFFFFF, 10014px -10px 0 0 #FFFFFF;
+  }
+  100% {
+    box-shadow: 9984px 0 0 0 #FFFFFF, 9999px 0 0 0 #FFFFFF, 10014px 0 0 0 #FFFFFF;
+  }
+}
+
 @keyframes fadeInDown {
     from {
         opacity: 0;

@@ -8,4 +8,5 @@ urlpatterns = [
     path('domains/', include('apps.domains.urls')),
     path('partners/', include('apps.partners.urls')),
     path('constructor/', include('apps.constructor.urls')),
+    path('proposal/', include('apps.proposal.urls')),
 ]

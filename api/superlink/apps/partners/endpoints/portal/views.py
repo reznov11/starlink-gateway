@@ -1,15 +1,17 @@
+from typing import List
+
+from django.urls import reverse
 from django.conf import settings
 from rest_framework import status
 from django.shortcuts import render
 from rest_framework.views import APIView
+from core.exceptions import CustomNotFound, CustomBadRequest
 from django.http import HttpRequest, JsonResponse, HttpResponse
-from core.exceptions import CustomNotFound, CustomBadRequest, CustomNotAuthorized
 
 from apps.domains.models import Domain
 from apps.constructor.models import Constructor
-from apps.domains.models.domain import DomainStatus
+from apps.authorize.permissions import TrustedDomain
 
-import logging
 
 # Create your views here.
 
@@ -37,25 +39,14 @@ class PackManifest(APIView):
 
 
 class PortalView(APIView):
-    _logger = logging.getLogger(__name__)
+    permission_classes: List = [
+        TrustedDomain
+    ]
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         domain_code = request.GET.get("ifr_code", "").strip()
-
-        if not domain_code:
-            raise CustomBadRequest("Код домена не передан")
-
-        domain = self._get_valid_domain(domain_code)
-        if not domain or not domain.partner:
-            raise CustomNotAuthorized("Несанкционированный доступ")
-
-        if self._is_blocked_access(domain=domain):
-            self._logger.warning(
-                f"Доступ запрещен: Домен {domain.code}, URL: {self._get_request_host(request)}"
-            )
-            raise CustomNotAuthorized("Несанкционированный доступ")
-
-        partner_form = self._get_partner_form(domain)
+        domain = Domain.objects.filter(code=domain_code).first()
+        partner_form = domain.partner.constructors.first()
 
         if not partner_form:
             raise CustomBadRequest("Нет формы.")
@@ -63,11 +54,15 @@ class PortalView(APIView):
         if not self._form_has_components(partner_form):
             raise CustomBadRequest("Нет компонентов.")
 
+        relative_action_url = reverse('api:proposal:create')
+
         return render(
             request,
             "portal/index.html",
             {
+                "action_url": request.build_absolute_uri(relative_action_url),
                 "partner_form": partner_form,
+                "domain_code": domain.code,
                 "form_settings": partner_form.settings,
                 "partner_id": partner_form.partner.public_id,
                 "show_modal": partner_form.settings.get("type") in ["button", "logo"],
@@ -75,36 +70,6 @@ class PortalView(APIView):
             status=status.HTTP_202_ACCEPTED,
         )
 
-    def _get_request_host(self, request: HttpRequest) -> str:
-        return request.headers.get("X-Partner-Url") or request.get_host()
-
-    def _get_valid_domain(self, domain_code: str) -> Domain:
-        domain = (
-            Domain.objects.filter(code=domain_code)
-            .select_related("partner", "partner__domain")
-            .first()
-        )
-
-        if not domain:
-            raise CustomNotFound("Домен не найден")
-
-        return domain
-
-    def _is_blocked_access(self, domain: Domain) -> bool:
-        partner = domain.partner
-        expected_url = domain.url
-        request_host = self._get_request_host(self.request)
-
-        return any(
-            [
-                domain.status == DomainStatus.NOT_ACTIVE,
-                not partner.is_active,
-                expected_url and expected_url != request_host,
-            ]
-        )
-
-    def _get_partner_form(self, domain: Domain) -> Constructor | None:
-        return Constructor.objects.filter(partner=domain.partner).first()
-
-    def _form_has_components(self, form: Constructor) -> bool:
+    @staticmethod
+    def _form_has_components(form: Constructor) -> bool:
         return bool(form.components)

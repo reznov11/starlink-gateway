@@ -12,7 +12,7 @@
       <div *ngSwitchCase="'paragraph'" class="preview-form__paragraph">
         {{ element.value }}
       </div>
-  
+
       <div *ngSwitchCase="'textfield'" class="preview-form__field full-width">
         <mat-form-field appearance="outline" class="full-width">
           <input
@@ -23,7 +23,7 @@
           />
         </mat-form-field>
       </div>
-  
+
       <div *ngSwitchCase="'phone'" class="preview-form__field full-width">
         <mat-form-field appearance="outline" class="full-width">
           <input
@@ -34,7 +34,7 @@
           />
         </mat-form-field>
       </div>
-  
+
       <div *ngSwitchCase="'dropdown'" class="preview-form__field full-width">
         <mat-form-field appearance="outline" class="full-width">
           <mat-select
@@ -51,7 +51,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-  
+
       <div *ngSwitchCase="'radio'" class="preview-form__field full-width">
         <mat-radio-group
           [(ngModel)]="element.value"
@@ -67,7 +67,7 @@
           </mat-radio-button>
         </mat-radio-group>
       </div>
-  
+
       <div *ngSwitchCase="'checkbox'" class="preview-form__field full-width">
         <mat-checkbox
           [checked]="element.value"
@@ -77,7 +77,7 @@
           >{{ option.value }}</mat-checkbox
         >
       </div>
-  
+
       <div *ngSwitchCase="'image'" class="preview-form__media">
         <img
           *ngIf="element.value"
@@ -90,6 +90,7 @@
           <span>Изображение не загружено</span>
         </div>
       </div>
+
       <div *ngSwitchCase="'video'" class="preview-form__media">
         <video
           *ngIf="element.value"
@@ -101,6 +102,18 @@
           <mat-icon>videocam</mat-icon>
           <span>Видео не загружено</span>
         </div>
+      </div>
+
+      <div *ngSwitchCase="'hidden'" class="preview-form__field full-width">
+        <div class="preview-form__paragraph">Невидимое поле</div>
+        <br>
+        <mat-form-field appearance="outline" class="full-width">
+          <input
+            matInput
+            type="text"
+            [value]="element.value"
+          />
+        </mat-form-field>
       </div>
     </ng-container>
   </div>

@@ -1,8 +1,9 @@
 from typing import Any, Generator
 from django.http import HttpRequest
 from django.db.models import QuerySet
-from django.contrib.auth.models import User
 from django.contrib.admin import SimpleListFilter, ModelAdmin
+
+from apps.accounts.models.user import User
 
 
 class SourceFilter(SimpleListFilter):

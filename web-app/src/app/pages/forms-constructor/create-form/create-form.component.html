@@ -5,12 +5,12 @@
       class="sidebar__elements"
       cdkDropList
       #sidebarList="cdkDropList"
-      [cdkDropListData]="availableElements"
+      [cdkDropListData]="availableFormElements"
       [cdkDropListConnectedTo]="[formList]"
       (cdkDropListDropped)="onDrop($event)"
     >
       <div
-        *ngFor="let element of availableElements"
+        *ngFor="let element of availableFormElements"
         class="sidebar__element"
         cdkDrag
         [cdkDragData]="element"
@@ -38,7 +38,8 @@
             <mat-icon [svgIcon]="'custom_preview'"></mat-icon>
             Предпросмотр
           </button>
-          <button mat-flat-button (click)="onSave()" [disabled]="isLoading || formElements.length === 0 || formGroup.invalid">
+          <button mat-flat-button (click)="onSave()"
+                  [disabled]="isLoading || formElements.length === 0 || formGroup.invalid">
             <mat-icon>save</mat-icon>
             Сохранить
           </button>
@@ -69,9 +70,7 @@
       </form>
 
       <div
-        class="form-constructor__dropzone"
-        cdkDropList
-        #formList="cdkDropList"
+        class="form-constructor__dropzone" cdkDropList #formList="cdkDropList"
         [cdkDropListData]="formElements"
         [cdkDropListConnectedTo]="[sidebarList]"
         (cdkDropListDropped)="onDrop($event)"
@@ -94,14 +93,18 @@
               <div class="form-element__drag-handle" cdkDragHandle (click)="selectElement(element.id)">
                 <mat-icon [svgIcon]="'custom_drag_indicator'"></mat-icon>
               </div>
+
               <div class="form-element__header">
                 <div class="form-element__type-info">
                   <mat-icon>{{ element.icon }}</mat-icon>
                   <span class="form-element-label">{{ element.label }}</span>
                 </div>
                 <div class="form-element__actions">
-                  <mat-checkbox [checked]="element.required" (change)="toggleRequired(element)" 
-                  *ngIf="element.type == 'heading'">
+                  <mat-checkbox
+                    [checked]="element.required"
+                    (change)="toggleRequired(element)"
+                    *ngIf="element.type !== 'heading' && element.type !== 'info' && element.type !== 'paragraph'"
+                  >
                     Обязательное
                   </mat-checkbox>
                   <button mat-icon-button (click)="removeElement(i)">
@@ -109,8 +112,8 @@
                   </button>
                 </div>
               </div>
-              <div [ngSwitch]="element.type" class="form-element__content">
 
+              <div [ngSwitch]="element.type" class="form-element__content">
                 <div *ngSwitchCase="'heading'" class="form-unit">
                   <mat-form-field class="full-width" appearance="outline">
                     <input matInput placeholder="Введите заголовок" class="heading-input" [(ngModel)]="element.value">
@@ -119,24 +122,26 @@
 
                 <div *ngSwitchCase="'info'" class="form-unit">
                   <mat-form-field class="full-width" appearance="outline">
-                    <textarea matInput placeholder="Введите информационный текст" class="info-input" rows="4" [(ngModel)]="element.value"></textarea>
+                    <textarea matInput placeholder="Введите информационный текст" class="info-input"
+                              rows="4" [(ngModel)]="element.value"></textarea>
                   </mat-form-field>
                 </div>
 
                 <div *ngSwitchCase="'paragraph'" class="form-unit">
                   <mat-form-field class="full-width" appearance="outline">
-                    <textarea matInput placeholder="Введите текст" class="paragraph-input" rows="7" [(ngModel)]="element.value"></textarea>
+                    <textarea matInput placeholder="Введите текст"
+                              class="paragraph-input" rows="7" [(ngModel)]="element.value"></textarea>
                   </mat-form-field>
                 </div>
 
-                <div class="form-unit">
-                  <mat-form-field class="full-width" *ngSwitchCase="'textfield'" appearance="outline">
+                <div *ngSwitchCase="'textfield'" class="form-unit">
+                  <mat-form-field class="full-width" appearance="outline">
                     <input matInput [placeholder]="element.description" />
                   </mat-form-field>
                 </div>
 
-                <div class="form-unit">
-                  <mat-form-field class="full-width" *ngSwitchCase="'phone'" appearance="outline">
+                <div *ngSwitchCase="'phone'" class="form-unit">
+                  <mat-form-field class="full-width" appearance="outline">
                     <input matInput placeholder="+996" type="tel" />
                   </mat-form-field>
                 </div>
@@ -176,6 +181,7 @@
                     </div>
                   </div>
                 </div>
+
                 <div *ngSwitchCase="'radio'" class="preview-radio">
                   <mat-radio-group>
                     <div *ngFor="let option of element.options" class="radio-option">
@@ -204,6 +210,7 @@
                     </button>
                   </div>
                 </div>
+
                 <div *ngSwitchCase="'checkbox'" class="preview-checkbox">
                   <div *ngFor="let option of element.options" class="checkbox-option">
                     <mat-checkbox [value]="option.id">
@@ -213,7 +220,7 @@
                       <mat-icon>close</mat-icon>
                     </button>
                   </div>
-                  <div class="add-option">
+                  <div class="add-option" *ngIf="element.id !== 'agreement'">
                     <mat-form-field appearance="outline">
                       <input matInput [(ngModel)]="element.newOptionValue" placeholder="Добавить значение">
                     </mat-form-field>
@@ -222,6 +229,7 @@
                     </button>
                   </div>
                 </div>
+
                 <div *ngSwitchCase="'image'" class="preview-media" (click)="triggerFileInput(element)">
                   <div *ngIf="!element.value" class="preview-media__placeholder">
                     <mat-icon>image</mat-icon>
@@ -229,11 +237,13 @@
                   </div>
                   <div *ngIf="element.value" class="preview-media__content">
                     <img [src]="element.value" alt="Uploaded image" class="preview-media__image">
-                    <button mat-icon-button class="preview-media__remove" (click)="$event.stopPropagation(); element.value = undefined; element.file = undefined">
+                    <button mat-icon-button class="preview-media__remove"
+                            (click)="$event.stopPropagation(); element.value = undefined; element.file = undefined">
                       <mat-icon>close</mat-icon>
                     </button>
                   </div>
                 </div>
+
                 <div *ngSwitchCase="'video'" class="preview-media" (click)="triggerFileInput(element)">
                   <div *ngIf="!element.value" class="preview-media__placeholder">
                     <mat-icon>videocam</mat-icon>
@@ -241,11 +251,31 @@
                   </div>
                   <div *ngIf="element.value" class="preview-media__content">
                     <video [src]="element.value" controls class="preview-media__video"></video>
-                    <button mat-icon-button class="preview-media__remove" (click)="$event.stopPropagation(); element.value = undefined; element.file = undefined">
+                    <button mat-icon-button class="preview-media__remove"
+                            (click)="$event.stopPropagation(); element.value = undefined; element.file = undefined">
                       <mat-icon>close</mat-icon>
                     </button>
                   </div>
                 </div>
+
+                <div *ngSwitchCase="'hidden'" class="form-unit">
+                  <mat-form-field class="full-width" appearance="outline">
+                    <input matInput [placeholder]="element.description" [(ngModel)]="element.value" />
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="form-unit form-element__input_name" *ngIf="element.type !== 'heading'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select [placeholder]="'Название поля'"
+                              (selectionChange)="setElementInputName(
+                                element, $event.value
+                              )" [(ngModel)]="element.id">
+                    <mat-option *ngFor="let option of formInputNames" [value]="option.id">
+                      {{ option.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
           </div>

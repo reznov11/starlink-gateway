@@ -1,5 +1,8 @@
 export function getFrameCodeTemplate(data: any, originUrl: string): string {
-    return `<div data-partner-domain="${data.domain!.code}" data-partner-id="${data.partner!.id}"></div>
+    return `<!-- Вставьте этот HTML-код в то место, где вы хотите отобразить форму. -->
+<div data-partner-domain="${data.domain!.code}" data-partner-id="${data.partner!.id}"></div>
+
+  <!-- Вставьте этот код внутри тега <body> -->
   <script type="text/javascript">
     (() => {
       Object.assign(window, {

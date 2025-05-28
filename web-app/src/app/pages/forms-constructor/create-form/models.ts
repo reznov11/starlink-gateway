@@ -5,10 +5,25 @@ export interface FormElementOption {
   value: string;
 }
 
+export interface FormInputName {
+  id: string;
+  name: string;
+}
+
 export interface FormElement {
   id: string;
-  type: 'heading' | 'paragraph' | 'textfield' | 'phone' | 'dropdown' | 'radio' | 'checkbox' | 'image' | 'video' | 'info';
-  label: string;
+  type: 'heading' |
+    'paragraph' |
+    'textfield' |
+    'phone' |
+    'dropdown' |
+    'radio' |
+    'checkbox' |
+    'image' |
+    'video' |
+    'info' |
+    'hidden';
+  label?: string;
   description: string;
   icon?: string;
   placeholder?: string;
@@ -19,6 +34,7 @@ export interface FormElement {
   value?: string;
   file?: File;
   defaultValue?: string;
+  available?: boolean;
 }
 
 export interface PartnerForm {

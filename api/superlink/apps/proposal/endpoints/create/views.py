@@ -3,41 +3,77 @@ from rest_framework import serializers
 from apps.proposal.models import Proposal
 from django.http.request import QueryDict
 from rest_framework.response import Response
-from apps.authorize.permissions import IsActiveUser
 from rest_framework.permissions import BasePermission
 from rest_framework.serializers import ModelSerializer
 from rest_framework import permissions, status, viewsets
 from apps.proposal.serializers import ProposalSerializer
 
+from rest_framework.views import APIView
+from apps.authorize.permissions import TrustedDomain
+from core.exceptions import CustomNotFound, CustomBadRequest, CustomFatalException
+
+
 # Create your views here.
 
 
-class ProposalViewSet(viewsets.ModelViewSet):
-    queryset: List[Proposal] = Proposal.objects.all()
-    serializer_class: ModelSerializer = ProposalSerializer
-    permission_classes: List[BasePermission] = [
-        permissions.IsAuthenticated,
-        IsActiveUser
-    ]
+class ProposalViewSet(APIView):
+    # serializer_class: ModelSerializer = ProposalSerializer
     http_method_names = ['post']
+    permission_classes: List[BasePermission] = [
+        TrustedDomain
+    ]
 
-    def create(self, request: Response) -> Union[Response, Dict[str, str]]:
+    def post(self, request: Response) -> Union[Response, Dict[str, str]]:
         """
         This function is to create a new proposal.
         """
 
+        domain = getattr(request, 'domain', None)
+
+        if domain is None:
+            raise CustomNotFound('Домен не найден.')
+
+        if not domain.partner.source:
+            raise CustomBadRequest('Источник не найден')
+
+        proposal_data: QueryDict = request.data
+
         try:
-            proposal_data: QueryDict = request.data
-            proposal_data.update({'source': request.user.username})
-            serializer: ModelSerializer = self.get_serializer(data=proposal_data)
+            if 'csrfmiddlewaretoken' in proposal_data:
+                proposal_data.pop('csrfmiddlewaretoken')
+
+            proposal_data.update(
+                {
+                    'source': domain.partner.source
+                }
+            )
+
+            base_data_fields: list[str] = [
+                'email',
+                'fullname',
+                'phone_number',
+                'source',
+                'agreement'
+            ]
+
+            proposal_data.update({
+                'meta': {
+                    'product': proposal_data.get('product', '-'),
+                    **{
+                        key: value for key, value in proposal_data.items() \
+                        if key not in base_data_fields
+                    }
+                }
+            })
+            serializer: ModelSerializer = ProposalSerializer(data=proposal_data)
             serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            return Response({'message': 'ok'}, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response({}, status=status.HTTP_201_CREATED)
 
         except serializers.ValidationError as exc:
             print(exc)
-            return Response({'error': exc.detail}, status=status.HTTP_400_BAD_REQUEST)
+            raise CustomBadRequest(str(exc.detail))
 
         except Exception as exc:
             print(exc)
-            return Response({'error': str(exc)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            raise CustomFatalException('Внутреняя ошибка сервера, повторите попытку позже.')

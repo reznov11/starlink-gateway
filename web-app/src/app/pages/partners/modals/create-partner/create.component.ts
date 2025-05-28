@@ -49,6 +49,7 @@ export class CreatePartnerComponent implements OnInit {
     this.form = this.fb.group({
       is_active: [this.data?.partner.is_active, [Validators.required]],
       name:  [this.data?.partner.name || '', [Validators.required]],
+      source:  [this.data?.partner.source || '', [Validators.required]],
       domain:  [this.data?.partner.domain! || '', [Validators.required]],
       inn: [this.data?.partner.inn || '', [
         Validators.required,

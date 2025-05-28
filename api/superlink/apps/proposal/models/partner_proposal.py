@@ -20,14 +20,15 @@ class Proposal(models.Model):
     meta = models.JSONField(default=dict)
     source = models.CharField(verbose_name='Источник', max_length=255)
     created_at = models.DateTimeField(verbose_name="Создано", auto_now_add=True)
-    applicant_first_name = models.CharField(verbose_name="Имя заявителя", max_length=255)
-    applicant_lastname = models.CharField(verbose_name="Фамилия заявителя", max_length=255)
+    applicant_first_name = models.CharField(verbose_name="Имя заявителя", max_length=255, null=True, blank=True)
+    applicant_email = models.CharField(verbose_name="Почта", max_length=255, null=True, blank=True)
+    applicant_lastname = models.CharField(verbose_name="Фамилия заявителя", max_length=255, null=True, blank=True)
     applicant_middle_name = models.CharField(verbose_name="Отчество заявителя", max_length=255, null=True, blank=True)
     applicant_phone_number = models.CharField(verbose_name="Номер заявителя", max_length=255)
     status = models.CharField(verbose_name='Статус', choices=PROPOSAL_STATUS, max_length=10)
 
     def __str__(self):
-        return self.applicant_first_name
+        return self.get_applicant_fullname
 
     @property
     def get_applicant_fullname(self):
@@ -37,6 +38,9 @@ class Proposal(models.Model):
         if self.applicant_middle_name:
             applicant_fullname += f' {self.applicant_middle_name}'
 
+        if 'fullName' in self.meta:
+            applicant_fullname = self.meta['fullName']
+
         return applicant_fullname
 
     @property
@@ -44,22 +48,26 @@ class Proposal(models.Model):
         product: str = '-'
         meta_data: dict = self.meta
 
-        try:
-            if self.source not in ['mashinakg', 'housekg', 'banks.kg']:
-                get_product: str = meta_data.get('product')
+        if 'product' in meta_data:
+            p_product: str | None = meta_data.get('product', None)
 
-                if 'title' not in get_product:
-                    product = get_product
-                else:
-                    product = get_product['title']
+            if p_product:
+                product: str = p_product
 
-            if self.source == 'mashinakg':
-                product = meta_data.get('carInfo')['brandModel']
+        # Deprecated logic
+        '''
+        if 'carInfo' in meta_data:
+            car_product: str | None = meta_data.get('carInfo', None)
 
-            if self.source == 'housekg':
-                product = meta_data.get('estateDetails')['name']
-        except Exception as exc:
-            pass
+            if car_product:
+                product = car_product[['brandModel']]
+
+        if 'estateDetails' in meta_data:
+            estate_product: str | None = meta_data.get('estateDetails', None)
+
+            if estate_product:
+                product = estate_product['name']
+        '''
 
         return product
 

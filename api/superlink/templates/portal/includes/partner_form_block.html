@@ -1,20 +1,14 @@
 <div class="modal-main-title">{{ partner_form.title }}</div>
-<form class="form-group" role="form" novalidate="novalidate">
-    {% for component in partner_form.components %}
-        <div class="form-unit">
-            {% if component.type == 'heading' %}
-                <label class="form-unit-label">
-                    {{ component.value }}
+<form class="form-group" role="form" action="{{ action_url }}?ifr_code={{ domain_code }}">
+    {% csrf_token %}
 
-                    {% if component.required %}
-                        <span class="required">*</span>
-                    {% endif %}
-                </label>
+    {% for component in partner_form.components %}
+        <div class="form-unit {% if component.type == 'hidden' %}n-display{% endif %}">
+            {% if component.type == 'heading' %}
+                <label class=" {% if component.required %}required{% endif %}">{{ component.value }}</label>
 
             {% elif component.type == 'paragraph' %}
-                <div class="preview-form__paragraph">
-                    {{ component.value }}
-                </div>
+                <div class="preview-form__paragraph">{{ component.value }}</div>
 
             {% elif component.type == 'radio' %}
                 <div class="radio-group">
@@ -43,7 +37,9 @@
                 {% if component.required %}required{% endif %}>
                     <option value="" disabled selected>Выберите вариант</option>
                     {% for option in component.options %}
-                        <option value="{{ option.id }}" {% if component.value == option.id %}selected{% endif %}>{{ option.value }}</option>
+                        <option value="{{ option.id }}" {% if component.name == option.id %}selected{% endif %}>
+                            {{ option.value }}
+                        </option>
                     {% endfor %}
                 </select>
 
@@ -51,8 +47,10 @@
                 <div class="checkbox-group">
                     {% for option in component.options %}
                         <label class="custom-checkbox">
-                            <input type="checkbox" value="{{ option.id }}" {% if component.value == option.id %}checked{% endif %}
-                            id="{{ component.id }}" name="{{ component.id }}" {% if component.required %}required{% endif %}>
+                            <input type="checkbox" value="{{ option.id }}"
+                                   {% if component.value == option.id %}checked{% endif %}
+                            id="{{ component.id }}" name="{{ component.id }}"
+                                   {% if component.required %}required{% endif %}>
                             <span class="checkbox-mark"></span>
                             {{ option.value }}
                         </label>
@@ -63,17 +61,26 @@
                 <div style="font-size:15px; color:#222; margin-bottom:8px;">{{ component.value }}</div>
 
             {% elif component.type == 'info' %}
-                <div class="preview-form__info-block">
-                {{ component.value }}
-                </div>
+                <div class="preview-form__info-block">{{ component.value }}</div>
+
+            {% elif component.type == 'hidden' %}
+                <input class="form-input" type="hidden" id="{{ component.id }}" name="{{ component.id }}"
+                placeholder="Введите текст" value="{{ component.value }}" readonly
+                {% if component.required %}required{% endif %}>
+
             {% endif %}
 
             <div class="error-message" id="error-{{ component.id }}"></div>
         </div>
     {% endfor %}
+
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary" disabled>Отправить</button>
+        <button type="submit" class="btn btn-primary">
+            <div class="sending-loader n-display"></div>
+            <span>Отправить</span>
+        </button>
     </div>
+
     <div id="form-success-message" class="success-message" style="display:none;">
         Заявка успешно отправлена. <br> Мы свяжемся с вами в ближайшее время.
     </div>

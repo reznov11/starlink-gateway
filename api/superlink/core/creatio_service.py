@@ -5,7 +5,7 @@ from datetime import datetime
 from requests import Response
 from core.logger import log_app
 from django.conf import settings
-from apps.authorize.models import Proposal, CreatioProposal
+from apps.proposal.models import Proposal, CreatioProposal
 
 
 class CreatioCrm(requests.Session):
@@ -29,20 +29,21 @@ class CreatioCrm(requests.Session):
     @staticmethod
     def _crm_json_body(proposal: Proposal) -> dict[str, Any]:
         crm_json: dict = {
-           "fullName": proposal.get_applicant_fullname,
-           "phone": proposal.applicant_phone_number,
-           "product": {
-              "title": proposal.get_product,
-              "description": proposal.get_product,
-              "goal": proposal.get_product,
-              "amount": proposal.get_product_price,
-              "cbsId": "N/A",
-               "term": 0,
-           },
+            "fullName": proposal.meta.get('fullName', proposal.get_applicant_fullname),
+            "phone": proposal.meta.get('phone', proposal.applicant_phone_number),
+            "email": proposal.meta.get('email', proposal.applicant_email),
+            "product": {
+                "title": proposal.get_product,
+                "description": proposal.get_product,
+                "goal": proposal.meta.get('goal', 'N/A'),
+                "amount": proposal.meta.get('amount', 0),
+                "cbsId": proposal.meta.get('cbsId', 'N/A'),
+                "term": proposal.meta.get('term', 0),
+            },
             "source": proposal.source,
-            "cbsCustomerId": "N/A",
-            "dmsResult": True,
-            "consentToUsePersonalData": True,
+            "cbsCustomerId": proposal.meta.get('cbsCustomerId', 'N/A'),
+            "dmsResult": proposal.meta.get('dmsResult', False),
+            "consentToUsePersonalData": proposal.meta.get('consentToUsePersonalData', False),
         }
 
         if proposal.source == 'mashinakg':

@@ -32,7 +32,8 @@ export interface Partner {
   category?: string;
   inn?: string;
   is_active?: boolean;
-  created_at?: Date
+  created_at?: Date;
+  source?: string;
 }
 
 export interface FormSettings {

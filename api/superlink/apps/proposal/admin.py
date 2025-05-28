@@ -8,10 +8,11 @@ from django.http import HttpRequest
 from pygments.lexers import JsonLexer
 from .admin_filters import SourceFilter
 from .admin_actions import export_to_xls
-from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 from pygments.formatters import HtmlFormatter
 from rangefilter.filters import DateRangeFilterBuilder
+
+from apps.accounts.models.user import User
 
 
 # Register your models here.
@@ -108,8 +109,9 @@ class ProposalAdmin(admin.ModelAdmin):
     readonly_fields = (
         'created_at', 
         'source', 
-        'applicant_first_name', 
-        'applicant_lastname', 
+        'applicant_email',
+        'applicant_first_name',
+        'applicant_lastname',
         'get_applicant_middle_name',
         'applicant_phone_number', 
         'meta_data_prettified',

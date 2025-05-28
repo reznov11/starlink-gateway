@@ -13,7 +13,8 @@ if (window.partnerDomain) {
   const ALLOWED_ATTR = [
     'class', 'id', 'name', 'type', 'value', 'placeholder', 'for', 'checked',
     'selected', 'onclick', 'onchange', 'oninput', 'style', 'src', 'title', 'alt',
-    'data-partner-*', 'required', 'pattern', 'min', 'max', 'minlength', 'maxlength'
+    'data-partner-*', 'required', 'pattern', 'min', 'max', 'minlength', 'maxlength',
+    'action'
   ]
 
   const ALLOWED_ATTR_VALUES = {
@@ -21,13 +22,28 @@ if (window.partnerDomain) {
     'data-partner-domain': /^IFRM-\d{6}$/
   }
 
-  const secureFetch = async (url, headers = {}) => {
+  const partnerDomain = sanitizeString(window.partnerDomain || '');
+  const partnerId = sanitizeString(window.partnerId || '');
+  const partnerUrl = new URL(window.partnerUrl || '').toString();
+
+  const secureFetch = async ({url, headers = {}, method = 'GET', data = null}) => {
     try {
       const response = await fetch(url, {
-        headers: { ...headers, 'Content-Type': 'application/json' },
-        credentials: 'same-origin'
+        method: method,
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json' ,
+          'X-Partner-Url': partnerUrl.replace(/\/$/, '')
+        },
+        credentials: 'same-origin',
+        mode: "cors",
+        body: data
       });
-      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
       return response;
     } catch (error) {
       console.error('Fetch error:', error);
@@ -37,17 +53,15 @@ if (window.partnerDomain) {
 
   (async () => {
     try {
-      const partnerDomain = sanitizeString(window.partnerDomain || '');
-      const partnerId = sanitizeString(window.partnerId || '');
-      const partnerUrl = new URL(window.partnerUrl || '').toString();
-
       if (!partnerDomain || !partnerId || !partnerUrl) {
         throw new Error('Missing or invalid partner configuration');
       }
 
       const response = await secureFetch(
-        `${window.originUrl}/api/partners/portal?ifr_code=${encodeURIComponent(partnerDomain)}`,
-        { 'X-Partner-Url': partnerUrl.replace(/\/$/, '') }
+        {
+          url: `${window.originUrl}/api/partners/portal?ifr_code=${encodeURIComponent(partnerDomain)}`,
+          method: 'GET'
+        }
       );
 
       if (response.status === 202) {
@@ -69,13 +83,26 @@ if (window.partnerDomain) {
             WHOLE_DOCUMENT: false
           });
 
-          partnerContainer.appendChild(template.content.cloneNode(true));
+          partnerContainer.appendChild(
+            template.content.cloneNode(true)
+          );
 
           const partnerForm = partnerContainer.querySelector('form');
+
           if (partnerForm) {
+            partnerForm.noValidate = true;
             const submitButton = partnerForm.querySelector('button[type="submit"]');
+            const sendingIndicator = submitButton.querySelector('.sending-loader');
+            const submitButtonText = submitButton.querySelector('span');
             const formInputs = partnerForm.querySelectorAll("input, select, textarea");
             const successMessage = partnerForm.querySelector('#form-success-message');
+
+            const productPageTitleInput = document.createElement('input');
+            productPageTitleInput.type = 'hidden';
+            productPageTitleInput.value = document.title;
+            productPageTitleInput.readOnly = true;
+            productPageTitleInput.name = 'product';
+            partnerForm.appendChild(productPageTitleInput);
 
             function validateField(field) {
               const errorElement = document.getElementById(`error-${field.name}`);
@@ -95,7 +122,7 @@ if (window.partnerDomain) {
               }
 
               return isValid;
-            };
+            }
 
             function validateForm() {
               let formIsValid = true;
@@ -108,7 +135,7 @@ if (window.partnerDomain) {
 
               submitButton.disabled = !formIsValid;
               return formIsValid;
-            };
+            }
 
             formInputs.forEach(input => {
               input.addEventListener('input', () => {
@@ -142,9 +169,8 @@ if (window.partnerDomain) {
 
               try {
                 submitButton.disabled = true;
-                successMessage.style.display = 'block';
-
-                partnerForm.reset();
+                submitButtonText.classList.add('n-display');
+                sendingIndicator.classList.remove('n-display');
 
                 formInputs.forEach(input => {
                   const errorElement = document.getElementById(`error-${input.name}`);
@@ -154,14 +180,37 @@ if (window.partnerDomain) {
                   }
 
                   input.classList.remove('error');
-                  submitButton.remove();
                 });
+
+                const actionUrl = partnerForm.action;
+                const formObject = Object.fromEntries(formData.entries());
+
+                if (formObject.hasOwnProperty('consentToUsePersonalData')) {
+                  formObject.consentToUsePersonalData = true;
+                }
+
+                const response = await secureFetch(
+                  {
+                    url: actionUrl,
+                    method: 'POST',
+                    data: JSON.stringify(formObject),
+                  }
+                );
+
+                if (response.status === 201) {
+                  partnerForm.reset();
+                  submitButton.remove();
+                  successMessage.style.display = 'block';
+                } else {
+                  console.error('Error submitting form:', response.statusText);
+                }
 
               } catch (error) {
                 submitButton.disabled = false;
+                submitButtonText.classList.remove('n-display');
                 console.error('Form submission error:', error);
               } finally {
-                console.debug('Form submitted (sanitized):', Object.fromEntries(formData));
+                sendingIndicator.classList.add('n-display');
               }
             });
           }
@@ -170,12 +219,12 @@ if (window.partnerDomain) {
         console.warn('Unexpected API response:', response.status);
       }
 
-      const createSecureFunction = (baseName, fn) => {
+      function createSecureFunction (baseName, fn) {
         const safeName = `${baseName}_${partnerId.replace(/-/g, '_').toUpperCase()}`;
         if (window[safeName]) return;
         window[safeName] = fn;
         return safeName;
-      };
+      }
 
       createSecureFunction('partnerOpenModal', (modalId) => {
         const sanitizedId = sanitizeString(modalId);

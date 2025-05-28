@@ -14,13 +14,14 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PreviewFormModalComponent } from './preview-form-modal/preview-form-modal.component';
-import { FormElement, FormElementOption } from '@pages/forms-constructor/create-form/models';
+import {FormElement, FormElementOption, FormInputName} from '@pages/forms-constructor/create-form/models';
 import { FormConstructor, FormSettings, Partner } from '@pages/forms-constructor/interfaces';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormService } from '@app/services/api/form';
 import { PartnerService } from '@app/services/api/partner';
 import { FormSettingsModalComponent } from './form-settings-modal/form-settings-modal.component';
 import { finalize } from 'rxjs/operators';
+import {availableElements, inputNames} from '@pages/forms-constructor/create-form/data';
 
 @Component({
   selector: 'app-create-form',
@@ -43,7 +44,7 @@ import { finalize } from 'rxjs/operators';
   ]
 })
 export class CreateFormComponent implements OnInit {
-  private formId: string;
+  private readonly formId: string;
   public formGroup: FormGroup;
   public isLoading: boolean = false;
   public selectedElementId: string | null = null;
@@ -51,7 +52,7 @@ export class CreateFormComponent implements OnInit {
   public isEditMode: boolean = false;
   public components_total: number = 0;
   public partners: Partner[] = [];
-  public formSettings: FormSettings = {
+  public defaultFormSettings: FormSettings = {
     type: 'button',
     button: {
       background: '#4B82EC',
@@ -65,78 +66,8 @@ export class CreateFormComponent implements OnInit {
   } as FormSettings;
 
   public formElements: FormElement[] = [];
-  public readonly availableElements: FormElement[] = [
-    {
-      id: 'heading',
-      type: 'heading',
-      label: 'Заголовок',
-      description: 'Добавьте заголовок для формы',
-      icon: 'title'
-    },
-    {
-      id: 'paragraph',
-      type: 'paragraph',
-      label: 'Подзаголовок',
-      description: 'Добавьте описательный текст',
-      icon: 'subject'
-    },
-    {
-      id: 'textfield',
-      type: 'textfield',
-      label: 'Текстовое поле',
-      description: 'Поле для ввода текста',
-      icon: 'text_fields'
-    },
-    {
-      id: 'info',
-      type: 'info',
-      label: 'Текстовый блок',
-      description: 'Информационный текст',
-      icon: 'info'
-    },
-    {
-      id: 'phone',
-      type: 'phone',
-      label: 'Номер телефона',
-      description: 'Поле для ввода номера телефона',
-      icon: 'phone'
-    },
-    {
-      id: 'dropdown',
-      type: 'dropdown',
-      label: 'Выпадающий список',
-      description: 'Выберите из списка',
-      icon: 'arrow_drop_down_circle'
-    },
-    {
-      id: 'radio',
-      type: 'radio',
-      label: 'Радио',
-      description: 'Выбор одного варианта',
-      icon: 'radio_button_checked'
-    },
-    {
-      id: 'checkbox',
-      type: 'checkbox',
-      label: 'Чекбокс',
-      description: 'Выбор нескольких вариантов',
-      icon: 'check_box'
-    },
-    {
-      id: 'image',
-      type: 'image',
-      label: 'Картинка',
-      description: 'Добавить изображение',
-      icon: 'image'
-    },
-    {
-      id: 'video',
-      type: 'video',
-      label: 'Видео',
-      description: 'Добавить видео',
-      icon: 'videocam'
-    },
-  ];
+  public readonly availableFormElements: FormElement[] = availableElements;
+  public readonly formInputNames: FormInputName[] = inputNames;
 
   constructor(
     private fb: FormBuilder,
@@ -157,9 +88,7 @@ export class CreateFormComponent implements OnInit {
   async ngOnInit() {
     await this.getPartners();
 
-    if (this.formId) {
-      await this.getForm();
-    };
+    if (this.formId) await this.getForm();
   }
 
   private async getForm(): Promise<void> {
@@ -176,7 +105,7 @@ export class CreateFormComponent implements OnInit {
         partner: form.partner,
       });
 
-      this.formSettings = form.settings || this.formSettings;
+      this.defaultFormSettings = form.settings || this.defaultFormSettings;
       this.components_total = form.components_total || 0;
     })
   }
@@ -194,7 +123,7 @@ export class CreateFormComponent implements OnInit {
         partner: this.formGroup.get('partner')?.value,
         components: this.formElements,
         components_total: this.formElements.length,
-        settings: this.formSettings
+        settings: this.defaultFormSettings
       } as FormConstructor;
 
       let form = await this.formService.createForm(formData);
@@ -202,6 +131,8 @@ export class CreateFormComponent implements OnInit {
       if (this.isEditMode) {
         form = await this.formService.updateForm(this.formId, formData);
       }
+
+      console.log(formData)
 
       form.subscribe(({
         next: () => {
@@ -223,6 +154,13 @@ export class CreateFormComponent implements OnInit {
     }
   }
 
+  private static getDefaultOptions(type: string): FormElementOption[] | undefined {
+    if (type === 'radio' || type === 'checkbox' || type === 'dropdown') {
+      return [];
+    }
+    return undefined;
+  }
+
   public onDrop(event: CdkDragDrop<FormElement[]>): void {
     console.log('Event', event);
     if (event.previousContainer === event.container) {
@@ -236,7 +174,7 @@ export class CreateFormComponent implements OnInit {
       const draggedElement = {
         ...event.item.data,
         id: `${event.item.data.type}_${Date.now()}`,
-        options: this.getDefaultOptions(event.item.data.type),
+        options: CreateFormComponent.getDefaultOptions(event.item.data.type),
         isSelected: false
       };
 
@@ -250,13 +188,6 @@ export class CreateFormComponent implements OnInit {
     }
   }
 
-  private getDefaultOptions(type: string): FormElementOption[] | undefined {
-    if (type === 'radio' || type === 'checkbox' || type === 'dropdown') {
-      return [];
-    }
-    return undefined;
-  }
-
   public addOption(element: FormElement): void {
     if (!element.newOptionValue?.trim()) return;
 
@@ -265,7 +196,8 @@ export class CreateFormComponent implements OnInit {
     }
 
     element.options.push(<FormElementOption>{
-      id: `${element.type}_option_${Date.now()}`,
+      // id: `${element.type}_option_${Date.now()}`,
+      id: element.newOptionValue?.trim(),
       value: element.newOptionValue?.trim()
     });
 
@@ -300,7 +232,8 @@ export class CreateFormComponent implements OnInit {
     this.formElements = [];
     this.formGroup.reset();
 
-    this.router.navigate(['/dashboard/forms-constructor']);
+    this.router.navigate(['/dashboard/forms-constructor'])
+      .then(r => console.log('Создание формы отменено', r))
   }
 
   public removeElement(index: number): void {
@@ -351,19 +284,29 @@ export class CreateFormComponent implements OnInit {
     const dialogRef = this.dialog.open(FormSettingsModalComponent, {
       maxWidth: '1200px',
       data: {
-        settings: this.formSettings,
+        settings: this.defaultFormSettings,
         formElements: this.formElements
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.formSettings = result;
+        this.defaultFormSettings = result;
       }
     });
   }
 
   public toggleRequired(element: FormElement): void {
     element.required = !element.required;
+  }
+
+  public setElementInputName(element: FormElement, value: string) {
+    if (!element.id) {
+      element.id = value;
+      this.formElements = this.formElements.map(element => ({
+        ...element,
+        id: value
+      }));
+    }
   }
 }
