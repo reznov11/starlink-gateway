@@ -1,20 +1,45 @@
-if (window.partnerDomain) {
-  const sanitizeString = (str) => {
-    if (typeof str !== 'string') return '';
-    return str.replace(/[^a-zA-Z0-9_-]/g, '').trim();
-  };
+const sanitizeString = (str) => {
+  if (typeof str !== 'string') return '';
+  return str.replace(/[^a-zA-Z0-9_-]/g, '').trim();
+};
 
+const secureFetch = async ({url, headers = {}, method = 'GET', data = null}) => {
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json' ,
+        'X-Partner-Url': partnerUrl.replace(/\/$/, '')
+      },
+      credentials: 'same-origin',
+      mode: "cors",
+      body: data
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
+};
+
+if (window.partnerDomain) {
   const ALLOWED_TAGS = [
     'div', 'form', 'input', 'label', 'select', 'option', 'textarea', 'button',
     'span', 'img', 'p', 'strong', 'em', 'ul', 'li', 'ol', 'br', 'hr',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'video'
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'video', 'link'
   ]
 
   const ALLOWED_ATTR = [
     'class', 'id', 'name', 'type', 'value', 'placeholder', 'for', 'checked',
     'selected', 'onclick', 'onchange', 'oninput', 'style', 'src', 'title', 'alt',
-    'data-partner-*', 'required', 'pattern', 'min', 'max', 'minlength', 'maxlength',
-    'action'
+    'data-partner-*', 'data-modal-*', 'required', 'pattern', 'min', 'max', 'minlength', 'maxlength',
+    'action', 'rel', 'href'
   ]
 
   const ALLOWED_ATTR_VALUES = {
@@ -25,31 +50,7 @@ if (window.partnerDomain) {
   const partnerDomain = sanitizeString(window.partnerDomain || '');
   const partnerId = sanitizeString(window.partnerId || '');
   const partnerUrl = new URL(window.partnerUrl || '').toString();
-
-  const secureFetch = async ({url, headers = {}, method = 'GET', data = null}) => {
-    try {
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          ...headers,
-          'Content-Type': 'application/json' ,
-          'X-Partner-Url': partnerUrl.replace(/\/$/, '')
-        },
-        credentials: 'same-origin',
-        mode: "cors",
-        body: data
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-
-      return response;
-    } catch (error) {
-      console.error('Fetch error:', error);
-      throw error;
-    }
-  };
+  const partnerContainer = document.querySelector(`bakai-partner`).shadowRoot;
 
   (async () => {
     try {
@@ -66,15 +67,13 @@ if (window.partnerDomain) {
 
       if (response.status === 202) {
         const data = await response.text();
-        const partnerContainer = document.querySelector(`bakai-partner`);
 
         if (partnerContainer) {
           console.info('Partner metadata:', { partnerDomain, partnerId, partnerUrl });
           console.info('_+_+_+_ Bakaikg Partner IFrame loaded successfully. _+_+_+_');
 
-          partnerContainer.textContent = '';
-
-          const template = document.createElement('template');
+          const template = window.document.createElement('template');
+          template.textContent = '';
 
           template.innerHTML = DOMPurify.sanitize(data, {
             ALLOWED_TAGS: ALLOWED_TAGS,
@@ -87,6 +86,32 @@ if (window.partnerDomain) {
             template.content.cloneNode(true)
           );
 
+          partnerContainer.addEventListener('click', (event) => {
+            const target = event.target.closest('[data-modal-action]');
+
+            if (!target) return;
+
+            const action = target.getAttribute('data-modal-action');
+            const upperPartnerId = partnerId.replace(/-/g, '_').toUpperCase();
+
+            switch(action) {
+              case 'open-modal': {
+                const modalId = target.getAttribute('data-modal-id');
+                if (modalId && window[`partnerOpenModal_${upperPartnerId}`]) {
+                  window[`partnerOpenModal_${upperPartnerId}`](modalId);
+                }
+                break;
+              }
+              case 'close-modal': {
+                const modalId = target.getAttribute('data-modal-id');
+                if (modalId && window[`partnerCloseModal_${upperPartnerId}`]) {
+                  window[`partnerCloseModal_${upperPartnerId}`](modalId);
+                }
+                break;
+              }
+            }
+          });
+
           const partnerForm = partnerContainer.querySelector('form');
 
           if (partnerForm) {
@@ -97,7 +122,7 @@ if (window.partnerDomain) {
             const formInputs = partnerForm.querySelectorAll("input, select, textarea");
             const successMessage = partnerForm.querySelector('#form-success-message');
 
-            const productPageTitleInput = document.createElement('input');
+            const productPageTitleInput = window.document.createElement('input');
             productPageTitleInput.type = 'hidden';
             productPageTitleInput.value = document.title;
             productPageTitleInput.readOnly = true;
@@ -105,7 +130,7 @@ if (window.partnerDomain) {
             partnerForm.appendChild(productPageTitleInput);
 
             function validateField(field) {
-              const errorElement = document.getElementById(`error-${field.name}`);
+              const errorElement = partnerContainer.getElementById(`error-${field.name}`);
               const isValid = field.checkValidity();
 
               if (errorElement) {
@@ -151,7 +176,7 @@ if (window.partnerDomain) {
               if (input.type === 'radio' || input.type === 'checkbox') {
                 input.addEventListener('change', () => {
                   const groupName = input.name;
-                  const group = document.querySelectorAll(`[name="${groupName}"]`);
+                  const group = partnerContainer.querySelectorAll(`[name="${groupName}"]`);
 
                   group.forEach(radio => validateField(radio));
                   validateForm();
@@ -173,7 +198,7 @@ if (window.partnerDomain) {
                 sendingIndicator.classList.remove('n-display');
 
                 formInputs.forEach(input => {
-                  const errorElement = document.getElementById(`error-${input.name}`);
+                  const errorElement = partnerContainer.getElementById(`error-${input.name}`);
 
                   if (errorElement) {
                     errorElement.style.display = 'none';
@@ -228,7 +253,8 @@ if (window.partnerDomain) {
 
       createSecureFunction('partnerOpenModal', (modalId) => {
         const sanitizedId = sanitizeString(modalId);
-        const modal = document.getElementById(sanitizedId);
+        const modal = partnerContainer.getElementById(sanitizedId);
+
         if (!modal) return;
 
         const modalContent = modal.querySelector('.partner-form-modal-content');
@@ -246,7 +272,8 @@ if (window.partnerDomain) {
 
       createSecureFunction('partnerCloseModal', (modalId) => {
         const sanitizedId = sanitizeString(modalId);
-        const modal = document.getElementById(sanitizedId);
+        const modal = partnerContainer.getElementById(sanitizedId);
+
         if (!modal) return;
 
         const modalContent = modal.querySelector('.partner-form-modal-content');
@@ -259,13 +286,6 @@ if (window.partnerDomain) {
           modalContent.classList.remove('fadeOutUp');
         }, 400);
       });
-
-      document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('modal')) {
-          event.target.classList.remove('active');
-        }
-      });
-
     } catch (error) {
       console.error('Initialization failed:', error);
     }

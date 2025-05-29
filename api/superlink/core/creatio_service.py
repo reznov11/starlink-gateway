@@ -47,11 +47,11 @@ class CreatioCrm(requests.Session):
         }
 
         if proposal.source == 'mashinakg':
-            vehicle_info: dict = proposal.meta.get('carInfo')
+            vehicle_info: dict = proposal.meta.get('carInfo', {})
             crm_json["vehicle"] = vehicle_info
 
         if proposal.source == 'housekg':
-            restate_info: dict = proposal.meta.get('estateDetails')
+            restate_info: dict = proposal.meta.get('estateDetails', {})
             crm_json["realEstate"] = {
                 "description": restate_info.get('name', '-')
             }
