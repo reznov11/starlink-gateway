@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 SECRET_KEY = os.getenv(
     'SECRET_KEY', '2y)+u5#6wr(!g!=xpj&pnfa8n-!_-xmri7+&#b&-@*p!-8j$si')
 
-STATIC_URL = 'vtiger/static/'
+STATIC_URL = '/api/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -29,12 +29,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'assets')
 
 DEBUG = literal_eval(os.getenv('DEBUG', 'False'))
 
-# if not DEBUG:
-#     __import__('pysqlite3')
-#     sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', []).split(',')
-CSRF_TRUSTED_ORIGINS = os.getenv('TRUSTED_HOSTS').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+CSRF_TRUSTED_ORIGINS = os.getenv('TRUSTED_HOSTS', '').split(',')
 APPEND_SLASH = True
 ROOT_URLCONF = 'core.urls'
 WSGI_APPLICATION = 'core.wsgi.application'
